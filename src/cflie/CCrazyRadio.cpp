@@ -181,7 +181,7 @@ bool CCrazyRadio::startRadio() {
 	}
 
 	this->setChannel(nRadioChannel);
-	this->setDataRate(strDataRate);
+	this->setDataRate(strDataRate.c_str());
 
 	return true;
       }
@@ -249,15 +249,15 @@ void CCrazyRadio::setChannel(int nChannel) {
   this->writeControl(NULL, 0, 0x01, nChannel, 0);
 }
 
-void CCrazyRadio::setDataRate(std::string strDataRate) {
+void CCrazyRadio::setDataRate(const char *strDataRate) {
   m_strDataRate = strDataRate;
   int nDataRate = -1;
 
-  if(m_strDataRate == "250K") {
+  if(strcmp(m_strDataRate, "250K") == 0) {
     nDataRate = 0;
-  } else if(m_strDataRate == "1M") {
+  } else if(strcmp(m_strDataRate, "1M") == 0) {
     nDataRate = 1;
-  } else if(m_strDataRate == "2M") {
+  } else if(strcmp(m_strDataRate, "2M") == 0) {
     nDataRate = 2;
   }
 

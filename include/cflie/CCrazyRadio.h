@@ -79,7 +79,7 @@ private:
   libusb_device_handle *m_hndlDevice;
   int m_nARC;
   int m_nChannel;
-  std::string m_strDataRate;
+  const char *m_strDataRate;
   int m_nARDTime;
   int m_nARDBytes;
   enum Power m_enumPower;
@@ -103,7 +103,7 @@ private:
 
   void setARC(int nARC);
   void setChannel(int nChannel);
-  void setDataRate(std::string strDataRate);
+  void setDataRate(const char *strDataRate);
   void setARDBytes(int nARDBytes);
   void setARDTime(int nARDTime);
   void setAddress(char *cAddress);
