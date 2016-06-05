@@ -52,9 +52,9 @@ struct TOCElement {
   /*! \brief The (ref) type of the log element */
   int nType;
   /*! \brief The string group name of the log element */
-  std::string strGroup;
+  const char* strGroup;
   /*! \brief The string identifier of the log element */
-  std::string strIdentifier;
+  const char* strIdentifier;
   bool bIsLogging;
   double dValue;
 };

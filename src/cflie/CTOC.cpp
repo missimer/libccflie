@@ -36,6 +36,12 @@ CTOC::CTOC(CCrazyRadio *crRadio, int nPort) {
 }
 
 CTOC::~CTOC() {
+  for(std::list<struct TOCElement>::iterator itElement = m_lstTOCElements.begin();
+      itElement != m_lstTOCElements.end();
+      itElement++) {
+    free((void *)itElement->strGroup);
+    free((void *)itElement->strIdentifier);
+  }
 }
 
 bool CTOC::sendTOCPointerReset() {
@@ -125,8 +131,8 @@ bool CTOC::processItem(CCRTPPacket* crtpItem) {
 	}
 
 	struct TOCElement teNew;
-	teNew.strIdentifier = strIdentifier;
-	teNew.strGroup = strGroup;
+	teNew.strIdentifier = strdup(strIdentifier.c_str());
+	teNew.strGroup = strdup(strGroup.c_str());
 	teNew.nID = nID;
 	teNew.nType = nType;
 	teNew.bIsLogging = false;
@@ -151,11 +157,22 @@ struct TOCElement CTOC::elementForName(std::string strName, bool& bFound) {
       itElement++) {
     struct TOCElement teCurrent = *itElement;
 
-    std::string strTempFullname = teCurrent.strGroup + "." + teCurrent.strIdentifier;
-    if(strName == strTempFullname) {
+    char *strTempFullname = (char *)malloc(strlen(teCurrent.strGroup) +
+                                           strlen(teCurrent.strIdentifier) + 2);
+    if(strTempFullname == NULL) {
+      fprintf(stderr, "malloc in CTOC::elementForName failed\n");
+      exit(EXIT_FAILURE);
+    }
+    strTempFullname[0] = '\0';
+    strcat(strTempFullname, teCurrent.strGroup);
+    strcat(strTempFullname, ".");
+    strcat(strTempFullname, teCurrent.strIdentifier);
+    if(strcmp(strName.c_str(), strTempFullname) == 0) {
       bFound = true;
+      free((void*)strTempFullname);
       return teCurrent;
     }
+    free((void*)strTempFullname);
   }
 
   bFound = false;
