@@ -27,10 +27,11 @@
 
 
 #include <cflie/CCrazyRadio.h>
+#include <stdlib.h>
 
 
 CCrazyRadio::CCrazyRadio(std::string strRadioIdentifier) {
-  m_strRadioIdentifier = strRadioIdentifier;
+  m_strRadioIdentifier = strdup(strRadioIdentifier.c_str());
   m_enumPower = P_M18DBM;
 
   m_ctxContext = NULL;
@@ -45,6 +46,7 @@ CCrazyRadio::CCrazyRadio(std::string strRadioIdentifier) {
 
 CCrazyRadio::~CCrazyRadio() {
   this->closeDevice();
+  free((void*)m_strRadioIdentifier);
 
   // TODO(winkler): Free all remaining packets in m_lstLoggingPackets.
 
@@ -127,7 +129,7 @@ bool CCrazyRadio::startRadio() {
     int nDataRate;
     char cDataRateType;
 
-    if(std::sscanf(m_strRadioIdentifier.c_str(), "radio://%d/%d/%d%c",
+    if(std::sscanf(m_strRadioIdentifier, "radio://%d/%d/%d%c",
 		   &nDongleNBR, &nRadioChannel, &nDataRate,
 		   &cDataRateType) != EOF) {
       std::cout << "Opening radio " << nDongleNBR << "/" << nRadioChannel << "/" << nDataRate << cDataRateType << std::endl;

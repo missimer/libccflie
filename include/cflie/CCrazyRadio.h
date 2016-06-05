@@ -72,7 +72,7 @@ private:
   // Variables
   /*! \brief The radio URI as supplied when initializing the class
       instance */
-  std::string m_strRadioIdentifier;
+  const char * m_strRadioIdentifier;
   /*! \brief The current USB context as supplied by libusb */
   libusb_context *m_ctxContext;
   libusb_device *m_devDevice;
