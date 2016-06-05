@@ -366,14 +366,14 @@ bool CTOC::registerLoggingBlock(std::string strName, double dFrequency) {
 
       m_lstLoggingBlocks.push_back(lbNew);
 
-      return this->enableLogging(strName);
+      return this->enableLogging(strName.c_str());
     }
   }
 
   return false;
 }
 
-bool CTOC::enableLogging(std::string strBlockName) {
+bool CTOC::enableLogging(const char *strBlockName) {
   bool bFound;
 
   struct LoggingBlock lbCurrent = this->loggingBlockForName(strBlockName, bFound);

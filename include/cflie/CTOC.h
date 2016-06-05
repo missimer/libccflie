@@ -108,7 +108,7 @@ class CTOC {
 
   double doubleValue(const char *strName);
 
-  bool enableLogging(std::string strBlockName);
+  bool enableLogging(const char *strBlockName);
 
   void processPackets(CCRTPPacket** lstPackets, int count);
 
