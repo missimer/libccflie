@@ -62,7 +62,7 @@ struct TOCElement {
 #define MAX_LST_ELEMENT_IDS 128
 
 struct LoggingBlock {
-  std::string strName;
+  const char *strName;
   int nID;
   double dFrequency;
   int lstElementIDsCount;

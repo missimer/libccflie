@@ -42,6 +42,11 @@ CTOC::~CTOC() {
     free((void *)itElement->strGroup);
     free((void *)itElement->strIdentifier);
   }
+    for(std::list<struct LoggingBlock>::iterator itBlock = m_lstLoggingBlocks.begin();
+      itBlock != m_lstLoggingBlocks.end();
+      itBlock++) {
+      free((void*)itBlock->strName);
+    }
 }
 
 bool CTOC::sendTOCPointerReset() {
@@ -307,7 +312,7 @@ struct LoggingBlock CTOC::loggingBlockForName(std::string strName, bool& bFound)
       itBlock++) {
     struct LoggingBlock lbCurrent = *itBlock;
 
-    if(strName == lbCurrent.strName) {
+    if(strcmp(strName.c_str(), lbCurrent.strName) == 0) {
       bFound = true;
       return lbCurrent;
     }
@@ -384,7 +389,7 @@ bool CTOC::registerLoggingBlock(std::string strName, double dFrequency) {
     if(bCreateOK) {
       struct LoggingBlock lbNew;
       lbNew.lstElementIDsCount = 0;
-      lbNew.strName = strName;
+      lbNew.strName = strdup(strName.c_str());
       lbNew.nID = nID;
       lbNew.dFrequency = dFrequency;
 
