@@ -106,7 +106,7 @@ class CTOC {
   bool stopLogging(std::string strName);
   bool isLogging(std::string strName);
 
-  double doubleValue(std::string strName);
+  double doubleValue(const char *strName);
 
   bool enableLogging(std::string strBlockName);
 

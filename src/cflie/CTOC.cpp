@@ -268,7 +268,7 @@ bool CTOC::isLogging(std::string strName) {
   // TODO: Implement me.
 }
 
-double CTOC::doubleValue(std::string strName) {
+double CTOC::doubleValue(const char *strName) {
   bool bFound;
 
   struct TOCElement teResult = this->elementForName(strName, bFound);
