@@ -33,20 +33,18 @@ CTOC::CTOC(CCrazyRadio *crRadio, int nPort) {
   m_crRadio = crRadio;
   m_nPort = nPort;
   m_nItemCount = 0;
+  m_lstTOCElementsCount = 0;
+  m_lstLoggingBlocksCount = 0;
 }
 
 CTOC::~CTOC() {
-  for(std::list<struct TOCElement>::iterator itElement = m_lstTOCElements.begin();
-      itElement != m_lstTOCElements.end();
-      itElement++) {
-    free((void *)itElement->strGroup);
-    free((void *)itElement->strIdentifier);
+  for(int i = 0; i < m_lstTOCElementsCount; i++) {
+    free((void *)m_lstTOCElements[i].strGroup);
+    free((void *)m_lstTOCElements[i].strIdentifier);
   }
-    for(std::list<struct LoggingBlock>::iterator itBlock = m_lstLoggingBlocks.begin();
-      itBlock != m_lstLoggingBlocks.end();
-      itBlock++) {
-      free((void*)itBlock->strName);
-    }
+  for(int i = 0; i < m_lstLoggingBlocksCount; i++) {
+    free((void*)m_lstLoggingBlocks[i].strName);
+  }
 }
 
 bool CTOC::sendTOCPointerReset() {
@@ -143,7 +141,11 @@ bool CTOC::processItem(CCRTPPacket* crtpItem) {
 	teNew.bIsLogging = false;
 	teNew.dValue = 0;
 
-	m_lstTOCElements.push_back(teNew);
+        if(m_lstTOCElementsCount == MAX_LST_TOC_ELEMENTS) {
+          fprintf(stderr, "m_lstTOCElementsCount == MAX_LST_TOC_ELEMENTS\n");
+          exit(EXIT_FAILURE);
+        }
+	m_lstTOCElements[m_lstTOCElementsCount++] = teNew;
 
 	// NOTE(winkler): For debug purposes only.
 	//std::cout << strGroup << "." << strIdentifier << std::endl;
@@ -157,10 +159,8 @@ bool CTOC::processItem(CCRTPPacket* crtpItem) {
 }
 
 struct TOCElement CTOC::elementForName(std::string strName, bool& bFound) {
-  for(std::list<struct TOCElement>::iterator itElement = m_lstTOCElements.begin();
-      itElement != m_lstTOCElements.end();
-      itElement++) {
-    struct TOCElement teCurrent = *itElement;
+  for(int i = 0; i < m_lstTOCElementsCount; i++) {
+    struct TOCElement teCurrent = m_lstTOCElements[i];
 
     char *strTempFullname = (char *)malloc(strlen(teCurrent.strGroup) +
                                            strlen(teCurrent.strIdentifier) + 2);
@@ -187,10 +187,8 @@ struct TOCElement CTOC::elementForName(std::string strName, bool& bFound) {
 }
 
 struct TOCElement CTOC::elementForID(int nID, bool& bFound) {
-  for(std::list<struct TOCElement>::iterator itElement = m_lstTOCElements.begin();
-      itElement != m_lstTOCElements.end();
-      itElement++) {
-    struct TOCElement teCurrent = *itElement;
+  for(int i = 0; i < m_lstTOCElementsCount; i++) {
+    struct TOCElement teCurrent = m_lstTOCElements[i];
 
     if(nID == teCurrent.nID) {
       bFound = true;
@@ -267,17 +265,15 @@ bool CTOC::startLogging(std::string strName, std::string strBlockName) {
 }
 
 bool CTOC::addElementToBlock(int nBlockID, int nElementID) {
-  for(std::list<struct LoggingBlock>::iterator itBlock = m_lstLoggingBlocks.begin();
-      itBlock != m_lstLoggingBlocks.end();
-      itBlock++) {
-    struct LoggingBlock lbCurrent = *itBlock;
+  for(int i = 0; i < m_lstLoggingBlocksCount; i++) {
+    struct LoggingBlock lbCurrent = m_lstLoggingBlocks[i];
 
     if(lbCurrent.nID == nBlockID) {
-      if((*itBlock).lstElementIDsCount == MAX_LST_ELEMENT_IDS) {
+      if(m_lstLoggingBlocks[i].lstElementIDsCount == MAX_LST_ELEMENT_IDS) {
         fprintf(stderr, "(*itBlock).lstElementIDsCount reached MAX_LST_ELEMENT_IDS");
         exit(EXIT_FAILURE);
       }
-      (*itBlock).lstElementIDs[(*itBlock).lstElementIDsCount++] = nElementID;
+      m_lstLoggingBlocks[i].lstElementIDs[m_lstLoggingBlocks[i].lstElementIDsCount++] = nElementID;
 
       return true;
     }
@@ -307,10 +303,8 @@ double CTOC::doubleValue(const char *strName) {
 }
 
 struct LoggingBlock CTOC::loggingBlockForName(std::string strName, bool& bFound) {
-  for(std::list<struct LoggingBlock>::iterator itBlock = m_lstLoggingBlocks.begin();
-      itBlock != m_lstLoggingBlocks.end();
-      itBlock++) {
-    struct LoggingBlock lbCurrent = *itBlock;
+  for(int i = 0; i < m_lstLoggingBlocksCount; i++) {
+    struct LoggingBlock lbCurrent = m_lstLoggingBlocks[i];
 
     if(strcmp(strName.c_str(), lbCurrent.strName) == 0) {
       bFound = true;
@@ -326,10 +320,8 @@ struct LoggingBlock CTOC::loggingBlockForName(std::string strName, bool& bFound)
 }
 
 struct LoggingBlock CTOC::loggingBlockForID(int nID, bool& bFound) {
-  for(std::list<struct LoggingBlock>::iterator itBlock = m_lstLoggingBlocks.begin();
-      itBlock != m_lstLoggingBlocks.end();
-      itBlock++) {
-    struct LoggingBlock lbCurrent = *itBlock;
+  for(int i = 0; i < m_lstLoggingBlocksCount; i++) {
+    struct LoggingBlock lbCurrent = m_lstLoggingBlocks[i];
 
     if(nID == lbCurrent.nID) {
       bFound = true;
@@ -393,7 +385,11 @@ bool CTOC::registerLoggingBlock(std::string strName, double dFrequency) {
       lbNew.nID = nID;
       lbNew.dFrequency = dFrequency;
 
-      m_lstLoggingBlocks.push_back(lbNew);
+      if(m_lstLoggingBlocksCount == MAX_LST_LOGGING_BLOCKS) {
+        fprintf(stderr, "m_lstLoggingBlocksCont == MAX_LST_LOGGING_BLOCKS");
+        exit(EXIT_FAILURE);
+      }
+      m_lstLoggingBlocks[m_lstLoggingBlocksCount++] = lbNew;
 
       return this->enableLogging(strName.c_str());
     }
@@ -586,14 +582,12 @@ int CTOC::elementIDinBlock(int nBlockID, int nElementIndex) {
 
 bool CTOC::setFloatValueForElementID(int nElementID, float fValue) {
   int nIndex = 0;
-  for(std::list<struct TOCElement>::iterator itElement = m_lstTOCElements.begin();
-      itElement != m_lstTOCElements.end();
-      itElement++, nIndex++) {
-    struct TOCElement teCurrent = *itElement;
+  for(int i = i; i < m_lstTOCElementsCount; i++) {
+    struct TOCElement teCurrent = m_lstTOCElements[i];
 
     if(teCurrent.nID == nElementID) {
       teCurrent.dValue = fValue; // We store floats as doubles
-      (*itElement) = teCurrent;
+      m_lstTOCElements[i] = teCurrent;
       // std::cout << fValue << std::endl;
       return true;
     }

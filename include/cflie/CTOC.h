@@ -69,14 +69,18 @@ struct LoggingBlock {
   int lstElementIDs[MAX_LST_ELEMENT_IDS];
 };
 
+#define MAX_LST_TOC_ELEMENTS 64
+#define MAX_LST_LOGGING_BLOCKS 64
 
 class CTOC {
  private:
   int m_nPort;
   CCrazyRadio *m_crRadio;
   int m_nItemCount;
-  std::list<struct TOCElement> m_lstTOCElements;
-  std::list<struct LoggingBlock> m_lstLoggingBlocks;
+  int m_lstTOCElementsCount;
+  struct TOCElement m_lstTOCElements[MAX_LST_TOC_ELEMENTS];
+  int m_lstLoggingBlocksCount;
+  struct LoggingBlock m_lstLoggingBlocks[MAX_LST_LOGGING_BLOCKS];
 
   bool requestInitialItem();
   bool requestItem(int nID, bool bInitial);
