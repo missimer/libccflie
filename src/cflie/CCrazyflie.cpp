@@ -142,7 +142,9 @@ bool CCrazyflie::cycle() {
   } break;
     
   case STATE_ZERO_MEASUREMENTS: {
-    m_tocLogs->processPackets(m_crRadio->popLoggingPackets());
+    int count;
+    CCRTPPacket **packets = m_crRadio->popLoggingPackets(&count);
+    m_tocLogs->processPackets(packets, count);
     
     // NOTE(winkler): Here, we can do measurement zero'ing. This is
     // not done at the moment, though. Reason: No readings to zero at
@@ -153,7 +155,9 @@ bool CCrazyflie::cycle() {
     
   case STATE_NORMAL_OPERATION: {
     // Shove over the sensor readings from the radio to the Logs TOC.
-    m_tocLogs->processPackets(m_crRadio->popLoggingPackets());
+    int count;
+    CCRTPPacket **packets = m_crRadio->popLoggingPackets(&count);
+    m_tocLogs->processPackets(packets, count);
     
     if(m_bSendsSetpoints) {
       // Check if it's time to send the setpoint

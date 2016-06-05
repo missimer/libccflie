@@ -422,12 +422,11 @@ bool CTOC::unregisterLoggingBlockID(int nID) {
   return false;
 }
 
-void CTOC::processPackets(std::list<CCRTPPacket*> lstPackets) {
-  if(lstPackets.size() > 0) {
-    for(std::list<CCRTPPacket*>::iterator itPacket = lstPackets.begin();
-	itPacket != lstPackets.end();
-	itPacket++) {
-      CCRTPPacket* crtpPacket = *itPacket;
+void CTOC::processPackets(CCRTPPacket** lstPackets, int count) {
+  int i;
+  if(count > 0) {
+    for(i = 0; i < count; i++) {
+      CCRTPPacket* crtpPacket = lstPackets[i];
 
       char* cData = crtpPacket->data();
       float fValue;

@@ -110,7 +110,7 @@ class CTOC {
 
   bool enableLogging(std::string strBlockName);
 
-  void processPackets(std::list<CCRTPPacket*> lstPackets);
+  void processPackets(CCRTPPacket** lstPackets, int count);
 
   int elementIDinBlock(int nBlockID, int nElementIndex);
   bool setFloatValueForElementID(int nElementID, float fValue);

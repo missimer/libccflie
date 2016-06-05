@@ -28,6 +28,7 @@
 
 #include <cflie/CCrazyRadio.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 
 CCrazyRadio::CCrazyRadio(std::string strRadioIdentifier) {
@@ -38,6 +39,7 @@ CCrazyRadio::CCrazyRadio(std::string strRadioIdentifier) {
   m_hndlDevice = NULL;
 
   m_bAckReceived = false;
+  m_lstLoggingPacketsCount = 0;
 
   /*int nReturn = */libusb_init(&m_ctxContext);
 
@@ -346,7 +348,12 @@ CCRTPPacket *CCrazyRadio::sendPacket(CCRTPPacket *crtpSend, bool bDeleteAfterwar
 	  crtpLog->setChannel(crtpPacket->channel());
 	  crtpLog->setPort(crtpPacket->port());
 
-	  m_lstLoggingPackets.push_back(crtpLog);
+          if(m_lstLoggingPacketsCount == MAX_LIST_LOGGING_PACKETS) {
+            fprintf(stderr, "m_lstLoggingPacketsCount reached %d\n",
+                    MAX_LIST_LOGGING_PACKETS);
+            exit(EXIT_FAILURE);
+          }
+          m_lstLoggingPackets[m_lstLoggingPacketsCount++] = crtpLog;
 	}
       } break;
       }
@@ -458,9 +465,17 @@ CCRTPPacket *CCrazyRadio::sendAndReceive(CCRTPPacket *crtpSend, int nPort, int n
   return crtpReturnvalue;
 }
 
-std::list<CCRTPPacket*> CCrazyRadio::popLoggingPackets() {
-  std::list<CCRTPPacket*> lstPackets = m_lstLoggingPackets;
-  m_lstLoggingPackets.clear();
+CCRTPPacket** CCrazyRadio::popLoggingPackets(int *count) {
+  CCRTPPacket** lstPackets =
+    (CCRTPPacket**)malloc(sizeof(*lstPackets) * m_lstLoggingPacketsCount);
+  if(lstPackets == NULL) {
+    fprintf(stderr, "Malloc in CCrazyRadio::popLoggingPackets failed\n");
+    exit(EXIT_FAILURE);
+  }
+  memcpy(lstPackets, m_lstLoggingPackets,
+         sizeof(*lstPackets) * m_lstLoggingPacketsCount);
+  *count = m_lstLoggingPacketsCount;
+  m_lstLoggingPacketsCount = 0;
 
   return lstPackets;
 }

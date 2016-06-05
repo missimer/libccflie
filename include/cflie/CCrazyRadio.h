@@ -46,6 +46,7 @@
 // Private
 #include "CCRTPPacket.h"
 
+#define MAX_LIST_LOGGING_PACKETS 256
 
 /*! \brief Power levels to configure the radio dongle with */
 enum Power {
@@ -87,7 +88,8 @@ private:
   int m_bContCarrier;
   float m_fDeviceVersion;
   bool m_bAckReceived;
-  std::list<CCRTPPacket*> m_lstLoggingPackets;
+  int m_lstLoggingPacketsCount;
+  CCRTPPacket* m_lstLoggingPackets[MAX_LIST_LOGGING_PACKETS];
 
   // Functions
   std::list<libusb_device*> listDevices(int nVendorID, int nProductID);
@@ -226,7 +228,7 @@ public:
 
     \return List of CCRTPPacket instances collected from port 5
     (logging). */
-  std::list<CCRTPPacket*> popLoggingPackets();
+  CCRTPPacket** popLoggingPackets(int *count);
 };
 
 
