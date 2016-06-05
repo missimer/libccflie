@@ -268,7 +268,11 @@ bool CTOC::addElementToBlock(int nBlockID, int nElementID) {
     struct LoggingBlock lbCurrent = *itBlock;
 
     if(lbCurrent.nID == nBlockID) {
-      (*itBlock).lstElementIDs.push_back(nElementID);
+      if((*itBlock).lstElementIDsCount == MAX_LST_ELEMENT_IDS) {
+        fprintf(stderr, "(*itBlock).lstElementIDsCount reached MAX_LST_ELEMENT_IDS");
+        exit(EXIT_FAILURE);
+      }
+      (*itBlock).lstElementIDs[(*itBlock).lstElementIDsCount++] = nElementID;
 
       return true;
     }
@@ -311,6 +315,7 @@ struct LoggingBlock CTOC::loggingBlockForName(std::string strName, bool& bFound)
 
   bFound = false;
   struct LoggingBlock lbEmpty;
+  lbEmpty.lstElementIDsCount = 0;
 
   return lbEmpty;
 }
@@ -329,6 +334,7 @@ struct LoggingBlock CTOC::loggingBlockForID(int nID, bool& bFound) {
 
   bFound = false;
   struct LoggingBlock lbEmpty;
+  lbEmpty.lstElementIDsCount = 0;
 
   return lbEmpty;
 }
@@ -377,6 +383,7 @@ bool CTOC::registerLoggingBlock(std::string strName, double dFrequency) {
 
     if(bCreateOK) {
       struct LoggingBlock lbNew;
+      lbNew.lstElementIDsCount = 0;
       lbNew.strName = strName;
       lbNew.nID = nID;
       lbNew.dFrequency = dFrequency;
@@ -459,7 +466,7 @@ void CTOC::processPackets(CCRTPPacket** lstPackets, int count) {
       struct LoggingBlock lbCurrent = this->loggingBlockForID(nBlockID, bFound);
 
       if(bFound) {
-	while(nIndex < lbCurrent.lstElementIDs.size()) {
+	while(nIndex < lbCurrent.lstElementIDsCount) {
 	  int nElementID = this->elementIDinBlock(nBlockID, nIndex);
 	  bool bFound;
 	  struct TOCElement teCurrent = this->elementForID(nElementID, bFound);
@@ -564,10 +571,8 @@ int CTOC::elementIDinBlock(int nBlockID, int nElementIndex) {
 
   struct LoggingBlock lbCurrent = this->loggingBlockForID(nBlockID, bFound);
   if(bFound) {
-    if(nElementIndex < lbCurrent.lstElementIDs.size()) {
-      std::list<int>::iterator itID = lbCurrent.lstElementIDs.begin();
-      advance(itID, nElementIndex);
-      return *itID;
+    if(nElementIndex < lbCurrent.lstElementIDsCount) {
+      return lbCurrent.lstElementIDs[nElementIndex];
     }
   }
 
