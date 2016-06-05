@@ -204,12 +204,14 @@ CCRTPPacket *CCrazyRadio::writeData(void *vdData, int nLength) {
   return crtpPacket;
 }
 
-bool CCrazyRadio::readData(void *vdData, int &nMaxLength) {
+bool CCrazyRadio::readData(void *vdData, int *nMaxLength) {
   int nActuallyRead;
-  int nReturn = libusb_bulk_transfer(m_hndlDevice, (0x81 | LIBUSB_ENDPOINT_IN), (unsigned char*)vdData, nMaxLength, &nActuallyRead, 50);
+  int nReturn = libusb_bulk_transfer(m_hndlDevice, (0x81 | LIBUSB_ENDPOINT_IN),
+                                     (unsigned char*)vdData, *nMaxLength,
+                                     &nActuallyRead, 50);
 
   if(nReturn == 0) {
-    nMaxLength = nActuallyRead;
+    *nMaxLength = nActuallyRead;
 
     return true;
   } else {
@@ -363,7 +365,7 @@ CCRTPPacket *CCrazyRadio::readACK() {
   char cBuffer[nBufferSize];
   int nBytesRead = nBufferSize;
 
-  if(this->readData(cBuffer, nBytesRead)) {
+  if(this->readData(cBuffer, &nBytesRead)) {
     if(nBytesRead > 0) {
       // Analyse status byte
       m_bAckReceived = true;//cBuffer[0] & 0x1;
