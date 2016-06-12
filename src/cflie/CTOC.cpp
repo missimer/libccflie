@@ -186,17 +186,17 @@ struct TOCElement CTOC::elementForName(const char *strName, bool *bFound) {
   return teEmpty;
 }
 
-struct TOCElement CTOC::elementForID(int nID, bool& bFound) {
+struct TOCElement CTOC::elementForID(int nID, bool *bFound) {
   for(int i = 0; i < m_lstTOCElementsCount; i++) {
     struct TOCElement teCurrent = m_lstTOCElements[i];
 
     if(nID == teCurrent.nID) {
-      bFound = true;
+      *bFound = true;
       return teCurrent;
     }
   }
 
-  bFound = false;
+  *bFound = false;
   struct TOCElement teEmpty;
 
   return teEmpty;
@@ -470,7 +470,7 @@ void CTOC::processPackets(CCRTPPacket** lstPackets, int count) {
 	while(nIndex < lbCurrent.lstElementIDsCount) {
 	  int nElementID = this->elementIDinBlock(nBlockID, nIndex);
 	  bool bFound;
-	  struct TOCElement teCurrent = this->elementForID(nElementID, bFound);
+	  struct TOCElement teCurrent = this->elementForID(nElementID, &bFound);
 
 	  if(bFound) {
 	    int nByteLength = 0;

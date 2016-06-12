@@ -98,7 +98,7 @@ class CTOC {
   bool requestItems();
 
   struct TOCElement elementForName(const char *strName, bool *bFound);
-  struct TOCElement elementForID(int nID, bool &bFound);
+  struct TOCElement elementForID(int nID, bool *bFound);
   int idForName(std::string strName);
   int typeForName(std::string strName);
 
