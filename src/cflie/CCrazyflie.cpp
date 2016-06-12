@@ -267,8 +267,8 @@ bool CCrazyflie::sendsSetpoints() {
   return m_bSendsSetpoints;
 }
 
-double CCrazyflie::sensorDoubleValue(std::string strName) {
-  return m_tocLogs->doubleValue(strName.c_str());
+double CCrazyflie::sensorDoubleValue(const char *strName) {
+  return m_tocLogs->doubleValue(strName);
 }
 
 void CCrazyflie::disableLogging() {

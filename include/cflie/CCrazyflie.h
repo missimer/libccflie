@@ -276,7 +276,7 @@ class CCrazyflie {
 
     \return Double value denoting the current value of the requested
     log variable. */
-  double sensorDoubleValue(std::string strName);
+  double sensorDoubleValue(const char *strName);
 
   /*! \brief Report the current battery level
 
