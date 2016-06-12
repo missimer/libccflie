@@ -228,7 +228,7 @@ int CTOC::typeForName(std::string strName) {
 
 bool CTOC::startLogging(std::string strName, std::string strBlockName) {
   bool bFound;
-  struct LoggingBlock lbCurrent = this->loggingBlockForName(strBlockName, bFound);
+  struct LoggingBlock lbCurrent = this->loggingBlockForName(strBlockName.c_str(), &bFound);
 
   if(bFound) {
     struct TOCElement teCurrent = this->elementForName(strName.c_str(), &bFound);
@@ -302,17 +302,17 @@ double CTOC::doubleValue(const char *strName) {
   return 0;
 }
 
-struct LoggingBlock CTOC::loggingBlockForName(std::string strName, bool& bFound) {
+struct LoggingBlock CTOC::loggingBlockForName(const char *strName, bool *bFound) {
   for(int i = 0; i < m_lstLoggingBlocksCount; i++) {
     struct LoggingBlock lbCurrent = m_lstLoggingBlocks[i];
 
-    if(strcmp(strName.c_str(), lbCurrent.strName) == 0) {
-      bFound = true;
+    if(strcmp(strName, lbCurrent.strName) == 0) {
+      *bFound = true;
       return lbCurrent;
     }
   }
 
-  bFound = false;
+  *bFound = false;
   struct LoggingBlock lbEmpty;
   lbEmpty.lstElementIDsCount = 0;
 
@@ -341,7 +341,7 @@ bool CTOC::registerLoggingBlock(std::string strName, double dFrequency) {
   bool bFound;
 
   if(dFrequency > 0) { // Only do it if a valid frequency > 0 is given
-    this->loggingBlockForName(strName, bFound);
+    this->loggingBlockForName(strName.c_str(), &bFound);
     if(bFound) {
       this->unregisterLoggingBlock(strName);
     }
@@ -401,7 +401,7 @@ bool CTOC::registerLoggingBlock(std::string strName, double dFrequency) {
 bool CTOC::enableLogging(const char *strBlockName) {
   bool bFound;
 
-  struct LoggingBlock lbCurrent = this->loggingBlockForName(strBlockName, bFound);
+  struct LoggingBlock lbCurrent = this->loggingBlockForName(strBlockName, &bFound);
   if(bFound) {
     double d10thOfMS = (1 / lbCurrent.dFrequency) * 1000 * 10;
     char cPayload[3] = {0x03, lbCurrent.nID, d10thOfMS};
@@ -422,7 +422,7 @@ bool CTOC::enableLogging(const char *strBlockName) {
 bool CTOC::unregisterLoggingBlock(std::string strName) {
   bool bFound;
 
-  struct LoggingBlock lbCurrent = this->loggingBlockForName(strName, bFound);
+  struct LoggingBlock lbCurrent = this->loggingBlockForName(strName.c_str(), &bFound);
   if(bFound) {
     return this->unregisterLoggingBlockID(lbCurrent.nID);
   }
