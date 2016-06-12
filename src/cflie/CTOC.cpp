@@ -226,12 +226,12 @@ int CTOC::typeForName(char *strName) {
   return -1;
 }
 
-bool CTOC::startLogging(std::string strName, std::string strBlockName) {
+bool CTOC::startLogging(const char *strName, const char *strBlockName) {
   bool bFound;
-  struct LoggingBlock lbCurrent = this->loggingBlockForName(strBlockName.c_str(), &bFound);
+  struct LoggingBlock lbCurrent = this->loggingBlockForName(strBlockName, &bFound);
 
   if(bFound) {
-    struct TOCElement teCurrent = this->elementForName(strName.c_str(), &bFound);
+    struct TOCElement teCurrent = this->elementForName(strName, &bFound);
     if(bFound) {
       char cPayload[5] = {0x01, lbCurrent.nID, teCurrent.nType, teCurrent.nID};
       CCRTPPacket* crtpLogVariable = new CCRTPPacket(cPayload, 4, 1);
