@@ -336,14 +336,14 @@ struct LoggingBlock CTOC::loggingBlockForID(int nID, bool *bFound) {
   return lbEmpty;
 }
 
-bool CTOC::registerLoggingBlock(std::string strName, double dFrequency) {
+bool CTOC::registerLoggingBlock(const char *strName, double dFrequency) {
   int nID = 0;
   bool bFound;
 
   if(dFrequency > 0) { // Only do it if a valid frequency > 0 is given
-    this->loggingBlockForName(strName.c_str(), &bFound);
+    this->loggingBlockForName(strName, &bFound);
     if(bFound) {
-      this->unregisterLoggingBlock(strName.c_str());
+      this->unregisterLoggingBlock(strName);
     }
 
     do {
@@ -381,7 +381,7 @@ bool CTOC::registerLoggingBlock(std::string strName, double dFrequency) {
     if(bCreateOK) {
       struct LoggingBlock lbNew;
       lbNew.lstElementIDsCount = 0;
-      lbNew.strName = strdup(strName.c_str());
+      lbNew.strName = strdup(strName);
       lbNew.nID = nID;
       lbNew.dFrequency = dFrequency;
 
@@ -391,7 +391,7 @@ bool CTOC::registerLoggingBlock(std::string strName, double dFrequency) {
       }
       m_lstLoggingBlocks[m_lstLoggingBlocksCount++] = lbNew;
 
-      return this->enableLogging(strName.c_str());
+      return this->enableLogging(strName);
     }
   }
 
