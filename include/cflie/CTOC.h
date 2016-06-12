@@ -109,8 +109,8 @@ class CTOC {
   struct LoggingBlock loggingBlockForID(int nID, bool& bFound);
 
   bool startLogging(std::string strName, std::string strBlockName);
-  bool stopLogging(std::string strName);
-  bool isLogging(std::string strName);
+  bool stopLogging(const char *strName);
+  bool isLogging(const char *strName);
 
   double doubleValue(const char *strName);
 
