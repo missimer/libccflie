@@ -106,7 +106,7 @@ class CTOC {
   bool registerLoggingBlock(std::string strName, double dFrequency);
   bool unregisterLoggingBlock(std::string strName);
   struct LoggingBlock loggingBlockForName(const char *strName, bool *bFound);
-  struct LoggingBlock loggingBlockForID(int nID, bool& bFound);
+  struct LoggingBlock loggingBlockForID(int nID, bool *bFound);
 
   bool startLogging(std::string strName, std::string strBlockName);
   bool stopLogging(const char *strName);

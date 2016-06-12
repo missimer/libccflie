@@ -319,17 +319,17 @@ struct LoggingBlock CTOC::loggingBlockForName(const char *strName, bool *bFound)
   return lbEmpty;
 }
 
-struct LoggingBlock CTOC::loggingBlockForID(int nID, bool& bFound) {
+struct LoggingBlock CTOC::loggingBlockForID(int nID, bool *bFound) {
   for(int i = 0; i < m_lstLoggingBlocksCount; i++) {
     struct LoggingBlock lbCurrent = m_lstLoggingBlocks[i];
 
     if(nID == lbCurrent.nID) {
-      bFound = true;
+      *bFound = true;
       return lbCurrent;
     }
   }
 
-  bFound = false;
+  *bFound = false;
   struct LoggingBlock lbEmpty;
   lbEmpty.lstElementIDsCount = 0;
 
@@ -347,7 +347,7 @@ bool CTOC::registerLoggingBlock(std::string strName, double dFrequency) {
     }
 
     do {
-      this->loggingBlockForID(nID, bFound);
+      this->loggingBlockForID(nID, &bFound);
 
       if(bFound) {
 	nID++;
@@ -464,7 +464,7 @@ void CTOC::processPackets(CCRTPPacket** lstPackets, int count) {
 
       int nBlockID = cData[1];
       bool bFound;
-      struct LoggingBlock lbCurrent = this->loggingBlockForID(nBlockID, bFound);
+      struct LoggingBlock lbCurrent = this->loggingBlockForID(nBlockID, &bFound);
 
       if(bFound) {
 	while(nIndex < lbCurrent.lstElementIDsCount) {
@@ -570,7 +570,7 @@ void CTOC::processPackets(CCRTPPacket** lstPackets, int count) {
 int CTOC::elementIDinBlock(int nBlockID, int nElementIndex) {
   bool bFound;
 
-  struct LoggingBlock lbCurrent = this->loggingBlockForID(nBlockID, bFound);
+  struct LoggingBlock lbCurrent = this->loggingBlockForID(nBlockID, &bFound);
   if(bFound) {
     if(nElementIndex < lbCurrent.lstElementIDsCount) {
       return lbCurrent.lstElementIDs[nElementIndex];
