@@ -92,8 +92,8 @@ bool CTOC::requestItem(int nID, bool bInitial) {
   cRequest[1] = nID;
 
   CCRTPPacket* crtpPacket = new CCRTPPacket(cRequest,
-					    (bInitial ? 1 : 2),
-					    0);
+                                            (bInitial ? 1 : 2),
+                                            0);
   crtpPacket->setPort(m_nPort);
   CCRTPPacket* crtpReceived = m_crRadio->sendAndReceive(crtpPacket);
 
@@ -118,39 +118,39 @@ bool CTOC::processItem(CCRTPPacket* crtpItem) {
       int nLength = crtpItem->dataLength();
 
       if(cData[1] == 0x0) { // Command identification ok?
-	int nID = cData[2];
-	int nType = cData[3];
+        int nID = cData[2];
+        int nType = cData[3];
 
-	std::string strGroup;
-	int nI;
-	for(nI = 4; cData[nI] != '\0'; nI++) {
-	  strGroup += cData[nI];
-	}
+        std::string strGroup;
+        int nI;
+        for(nI = 4; cData[nI] != '\0'; nI++) {
+          strGroup += cData[nI];
+        }
 
-	nI++;
-	std::string strIdentifier;
-	for(; cData[nI] != '\0'; nI++) {
-	  strIdentifier += cData[nI];
-	}
+        nI++;
+        std::string strIdentifier;
+        for(; cData[nI] != '\0'; nI++) {
+          strIdentifier += cData[nI];
+        }
 
-	struct TOCElement teNew;
-	teNew.strIdentifier = strdup(strIdentifier.c_str());
-	teNew.strGroup = strdup(strGroup.c_str());
-	teNew.nID = nID;
-	teNew.nType = nType;
-	teNew.bIsLogging = false;
-	teNew.dValue = 0;
+        struct TOCElement teNew;
+        teNew.strIdentifier = strdup(strIdentifier.c_str());
+        teNew.strGroup = strdup(strGroup.c_str());
+        teNew.nID = nID;
+        teNew.nType = nType;
+        teNew.bIsLogging = false;
+        teNew.dValue = 0;
 
         if(m_lstTOCElementsCount == MAX_LST_TOC_ELEMENTS) {
           fprintf(stderr, "m_lstTOCElementsCount == MAX_LST_TOC_ELEMENTS\n");
           exit(EXIT_FAILURE);
         }
-	m_lstTOCElements[m_lstTOCElementsCount++] = teNew;
+        m_lstTOCElements[m_lstTOCElementsCount++] = teNew;
 
-	// NOTE(winkler): For debug purposes only.
-	//std::cout << strGroup << "." << strIdentifier << std::endl;
+        // NOTE(winkler): For debug purposes only.
+        //std::cout << strGroup << "." << strIdentifier << std::endl;
 
-	return true;
+        return true;
       }
     }
   }
@@ -242,21 +242,21 @@ bool CTOC::startLogging(const char *strName, const char *strBlockName) {
       char* cData = crtpReceived->data();
       bool bCreateOK = false;
       if(cData[1] == 0x01 &&
-	 cData[2] == lbCurrent.nID &&
-	 cData[3] == 0x00) {
-	bCreateOK = true;
+         cData[2] == lbCurrent.nID &&
+         cData[3] == 0x00) {
+        bCreateOK = true;
       } else {
-	std::cout << cData[3] << std::endl;
+        std::cout << cData[3] << std::endl;
       }
 
       if(crtpReceived) {
-	delete crtpReceived;
+        delete crtpReceived;
       }
 
       if(bCreateOK) {
-	this->addElementToBlock(lbCurrent.nID, teCurrent.nID);
+        this->addElementToBlock(lbCurrent.nID, teCurrent.nID);
 
-	return true;
+        return true;
       }
     }
   }
@@ -350,7 +350,7 @@ bool CTOC::registerLoggingBlock(const char *strName, double dFrequency) {
       this->loggingBlockForID(nID, &bFound);
 
       if(bFound) {
-	nID++;
+        nID++;
       }
     } while(bFound);
 
@@ -467,99 +467,99 @@ void CTOC::processPackets(CCRTPPacket** lstPackets, int count) {
       struct LoggingBlock lbCurrent = this->loggingBlockForID(nBlockID, &bFound);
 
       if(bFound) {
-	while(nIndex < lbCurrent.lstElementIDsCount) {
-	  int nElementID = this->elementIDinBlock(nBlockID, nIndex);
-	  bool bFound;
-	  struct TOCElement teCurrent = this->elementForID(nElementID, &bFound);
+        while(nIndex < lbCurrent.lstElementIDsCount) {
+          int nElementID = this->elementIDinBlock(nBlockID, nIndex);
+          bool bFound;
+          struct TOCElement teCurrent = this->elementForID(nElementID, &bFound);
 
-	  if(bFound) {
-	    int nByteLength = 0;
+          if(bFound) {
+            int nByteLength = 0;
 
-	    // NOTE(winkler): We just copy over the incoming bytes in
-	    // their according data structures and afterwards assign
-	    // the value to fValue. This way, we let the compiler to
-	    // the magic of conversion.
-	    float fValue = 0;
+            // NOTE(winkler): We just copy over the incoming bytes in
+            // their according data structures and afterwards assign
+            // the value to fValue. This way, we let the compiler to
+            // the magic of conversion.
+            float fValue = 0;
 
-	    switch(teCurrent.nType) {
-	    case 1: { // UINT8
-	      nByteLength = 1;
-	      uint8_t uint8Value;
-	      memcpy(&uint8Value, &cLogdata[nOffset], nByteLength);
-	      fValue = uint8Value;
-	    } break;
+            switch(teCurrent.nType) {
+            case 1: { // UINT8
+              nByteLength = 1;
+              uint8_t uint8Value;
+              memcpy(&uint8Value, &cLogdata[nOffset], nByteLength);
+              fValue = uint8Value;
+            } break;
 
-	    case 2: { // UINT16
-	      nByteLength = 2;
-	      uint16_t uint16Value;
-	      memcpy(&uint16Value, &cLogdata[nOffset], nByteLength);
-	      fValue = uint16Value;
-	    } break;
+            case 2: { // UINT16
+              nByteLength = 2;
+              uint16_t uint16Value;
+              memcpy(&uint16Value, &cLogdata[nOffset], nByteLength);
+              fValue = uint16Value;
+            } break;
 
-	    case 3: { // UINT32
-	      nByteLength = 4;
-	      uint32_t uint32Value;
-	      memcpy(&uint32Value, &cLogdata[nOffset], nByteLength);
-	      fValue = uint32Value;
-	    } break;
+            case 3: { // UINT32
+              nByteLength = 4;
+              uint32_t uint32Value;
+              memcpy(&uint32Value, &cLogdata[nOffset], nByteLength);
+              fValue = uint32Value;
+            } break;
 
-	    case 4: { // INT8
-	      nByteLength = 1;
-	      int8_t int8Value;
-	      memcpy(&int8Value, &cLogdata[nOffset], nByteLength);
-	      fValue = int8Value;
-	    } break;
+            case 4: { // INT8
+              nByteLength = 1;
+              int8_t int8Value;
+              memcpy(&int8Value, &cLogdata[nOffset], nByteLength);
+              fValue = int8Value;
+            } break;
 
-	    case 5: { // INT16
-	      nByteLength = 2;
-	      int16_t int16Value;
-	      memcpy(&int16Value, &cLogdata[nOffset], nByteLength);
-	      fValue = int16Value;
-	    } break;
+            case 5: { // INT16
+              nByteLength = 2;
+              int16_t int16Value;
+              memcpy(&int16Value, &cLogdata[nOffset], nByteLength);
+              fValue = int16Value;
+            } break;
 
-	    case 6: { // INT32
-	      nByteLength = 4;
-	      int32_t int32Value;
-	      memcpy(&int32Value, &cLogdata[nOffset], nByteLength);
-	      fValue = int32Value;
-	    } break;
+            case 6: { // INT32
+              nByteLength = 4;
+              int32_t int32Value;
+              memcpy(&int32Value, &cLogdata[nOffset], nByteLength);
+              fValue = int32Value;
+            } break;
 
-	    case 7: { // FLOAT
-	      nByteLength = 4;
-	      memcpy(&fValue, &cLogdata[nOffset], nByteLength);
-	    } break;
+            case 7: { // FLOAT
+              nByteLength = 4;
+              memcpy(&fValue, &cLogdata[nOffset], nByteLength);
+            } break;
 
-	    case 8: { // FP16
-	      // NOTE(winkler): This is untested code (as no FP16
-	      // variable gets advertised yet). This has to be tested
-	      // and is to be used carefully. I will do that as soon
-	      // as I find time for it.
-	      nByteLength = 2;
-	      char cBuffer1[nByteLength];
-	      char cBuffer2[4];
-	      memcpy(cBuffer1, &cLogdata[nOffset], nByteLength);
-	      cBuffer2[0] = cBuffer1[0] & 0b10000000; // Get the sign bit
-	      cBuffer2[1] = 0;
-	      cBuffer2[2] = cBuffer1[0] & 0b01111111; // Get the magnitude
-	      cBuffer2[3] = cBuffer1[1];
-	      memcpy(&fValue, cBuffer2, 4); // Put it into the float variable
-	    } break;
+            case 8: { // FP16
+              // NOTE(winkler): This is untested code (as no FP16
+              // variable gets advertised yet). This has to be tested
+              // and is to be used carefully. I will do that as soon
+              // as I find time for it.
+              nByteLength = 2;
+              char cBuffer1[nByteLength];
+              char cBuffer2[4];
+              memcpy(cBuffer1, &cLogdata[nOffset], nByteLength);
+              cBuffer2[0] = cBuffer1[0] & 0b10000000; // Get the sign bit
+              cBuffer2[1] = 0;
+              cBuffer2[2] = cBuffer1[0] & 0b01111111; // Get the magnitude
+              cBuffer2[3] = cBuffer1[1];
+              memcpy(&fValue, cBuffer2, 4); // Put it into the float variable
+            } break;
 
-	    default: { // Unknown. This hopefully never happens.
-	    } break;
-	    }
+            default: { // Unknown. This hopefully never happens.
+            } break;
+            }
 
-	    this->setFloatValueForElementID(nElementID, fValue);
-	    nOffset += nByteLength;
-	    nIndex++;
-	  } else {
-	    std::cerr << "Didn't find element ID " << nElementID
-		 << " in block ID " << nBlockID
-		 << " while parsing incoming logging data." << std::endl;
-	    std::cerr << "This REALLY shouldn't be happening!" << std::endl;
-	    std::exit(-1);
-	  }
-	}
+            this->setFloatValueForElementID(nElementID, fValue);
+            nOffset += nByteLength;
+            nIndex++;
+          } else {
+            std::cerr << "Didn't find element ID " << nElementID
+                 << " in block ID " << nBlockID
+                 << " while parsing incoming logging data." << std::endl;
+            std::cerr << "This REALLY shouldn't be happening!" << std::endl;
+            std::exit(-1);
+          }
+        }
       }
 
       delete crtpPacket;
