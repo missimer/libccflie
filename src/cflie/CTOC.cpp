@@ -202,10 +202,10 @@ struct TOCElement CTOC::elementForID(int nID, bool *bFound) {
   return teEmpty;
 }
 
-int CTOC::idForName(std::string strName) {
+int CTOC::idForName(char *strName) {
   bool bFound;
 
-  struct TOCElement teResult = this->elementForName(strName.c_str(), &bFound);
+  struct TOCElement teResult = this->elementForName(strName, &bFound);
 
   if(bFound) {
     return teResult.nID;
