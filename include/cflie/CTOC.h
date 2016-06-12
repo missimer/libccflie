@@ -104,7 +104,7 @@ class CTOC {
 
   // For loggable variables only
   bool registerLoggingBlock(std::string strName, double dFrequency);
-  bool unregisterLoggingBlock(std::string strName);
+  bool unregisterLoggingBlock(const char *strName);
   struct LoggingBlock loggingBlockForName(const char *strName, bool *bFound);
   struct LoggingBlock loggingBlockForID(int nID, bool *bFound);
 

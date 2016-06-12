@@ -343,7 +343,7 @@ bool CTOC::registerLoggingBlock(std::string strName, double dFrequency) {
   if(dFrequency > 0) { // Only do it if a valid frequency > 0 is given
     this->loggingBlockForName(strName.c_str(), &bFound);
     if(bFound) {
-      this->unregisterLoggingBlock(strName);
+      this->unregisterLoggingBlock(strName.c_str());
     }
 
     do {
@@ -419,10 +419,10 @@ bool CTOC::enableLogging(const char *strBlockName) {
   return false;
 }
 
-bool CTOC::unregisterLoggingBlock(std::string strName) {
+bool CTOC::unregisterLoggingBlock(const char *strName) {
   bool bFound;
 
-  struct LoggingBlock lbCurrent = this->loggingBlockForName(strName.c_str(), &bFound);
+  struct LoggingBlock lbCurrent = this->loggingBlockForName(strName, &bFound);
   if(bFound) {
     return this->unregisterLoggingBlockID(lbCurrent.nID);
   }
