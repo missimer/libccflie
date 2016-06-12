@@ -214,10 +214,10 @@ int CTOC::idForName(char *strName) {
   return -1;
 }
 
-int CTOC::typeForName(std::string strName) {
+int CTOC::typeForName(char *strName) {
   bool bFound;
 
-  struct TOCElement teResult = this->elementForName(strName.c_str(), &bFound);
+  struct TOCElement teResult = this->elementForName(strName, &bFound);
 
   if(bFound) {
     return teResult.nType;

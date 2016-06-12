@@ -100,7 +100,7 @@ class CTOC {
   struct TOCElement elementForName(const char *strName, bool *bFound);
   struct TOCElement elementForID(int nID, bool *bFound);
   int idForName(char *strName);
-  int typeForName(std::string strName);
+  int typeForName(char *strName);
 
   // For loggable variables only
   bool registerLoggingBlock(std::string strName, double dFrequency);
