@@ -158,7 +158,7 @@ bool CTOC::processItem(CCRTPPacket* crtpItem) {
   return false;
 }
 
-struct TOCElement CTOC::elementForName(std::string strName, bool& bFound) {
+struct TOCElement CTOC::elementForName(const char *strName, bool *bFound) {
   for(int i = 0; i < m_lstTOCElementsCount; i++) {
     struct TOCElement teCurrent = m_lstTOCElements[i];
 
@@ -172,15 +172,15 @@ struct TOCElement CTOC::elementForName(std::string strName, bool& bFound) {
     strcat(strTempFullname, teCurrent.strGroup);
     strcat(strTempFullname, ".");
     strcat(strTempFullname, teCurrent.strIdentifier);
-    if(strcmp(strName.c_str(), strTempFullname) == 0) {
-      bFound = true;
+    if(strcmp(strName, strTempFullname) == 0) {
+      *bFound = true;
       free((void*)strTempFullname);
       return teCurrent;
     }
     free((void*)strTempFullname);
   }
 
-  bFound = false;
+  *bFound = false;
   struct TOCElement teEmpty;
 
   return teEmpty;
@@ -205,7 +205,7 @@ struct TOCElement CTOC::elementForID(int nID, bool& bFound) {
 int CTOC::idForName(std::string strName) {
   bool bFound;
 
-  struct TOCElement teResult = this->elementForName(strName, bFound);
+  struct TOCElement teResult = this->elementForName(strName.c_str(), &bFound);
 
   if(bFound) {
     return teResult.nID;
@@ -217,7 +217,7 @@ int CTOC::idForName(std::string strName) {
 int CTOC::typeForName(std::string strName) {
   bool bFound;
 
-  struct TOCElement teResult = this->elementForName(strName, bFound);
+  struct TOCElement teResult = this->elementForName(strName.c_str(), &bFound);
 
   if(bFound) {
     return teResult.nType;
@@ -231,7 +231,7 @@ bool CTOC::startLogging(std::string strName, std::string strBlockName) {
   struct LoggingBlock lbCurrent = this->loggingBlockForName(strBlockName, bFound);
 
   if(bFound) {
-    struct TOCElement teCurrent = this->elementForName(strName, bFound);
+    struct TOCElement teCurrent = this->elementForName(strName.c_str(), &bFound);
     if(bFound) {
       char cPayload[5] = {0x01, lbCurrent.nID, teCurrent.nType, teCurrent.nID};
       CCRTPPacket* crtpLogVariable = new CCRTPPacket(cPayload, 4, 1);
@@ -293,7 +293,7 @@ bool CTOC::isLogging(const char *strName) {
 double CTOC::doubleValue(const char *strName) {
   bool bFound;
 
-  struct TOCElement teResult = this->elementForName(strName, bFound);
+  struct TOCElement teResult = this->elementForName(strName, &bFound);
 
   if(bFound) {
     return teResult.dValue;
