@@ -192,7 +192,7 @@ bool CCrazyflie::copterInRange() {
 void CCrazyflie::setRoll(float fRoll) {
   m_fRoll = fRoll;
   
-  if(std::fabs(m_fRoll) > m_fMaxAbsRoll) {
+  if(fabs(m_fRoll) > m_fMaxAbsRoll) {
     m_fRoll = copysign(m_fMaxAbsRoll, m_fRoll);
   }
 }
@@ -204,7 +204,7 @@ float CCrazyflie::roll() {
 void CCrazyflie::setPitch(float fPitch) {
   m_fPitch = fPitch;
   
-  if(std::fabs(m_fPitch) > m_fMaxAbsPitch) {
+  if(fabs(m_fPitch) > m_fMaxAbsPitch) {
     m_fPitch = copysign(m_fMaxAbsPitch, m_fPitch);
   }
 }
@@ -216,7 +216,7 @@ float CCrazyflie::pitch() {
 void CCrazyflie::setYaw(float fYaw) {
   m_fYaw = fYaw;
 
-  if(std::fabs(m_fYaw) > m_fMaxYaw){
+  if(fabs(m_fYaw) > m_fMaxYaw){
       m_fYaw = copysign(m_fMaxYaw, m_fYaw);
   }
 }
