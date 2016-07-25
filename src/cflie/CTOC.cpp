@@ -134,13 +134,19 @@ bool CTOC::processItem(CCRTPPacket* crtpItem) {
         }
 
         nI++;
-        std::string strIdentifier;
+        int strIdentifierIndex = 0;
+        char strIdentifier[256];
+        memset(strIdentifier, 0, sizeof(strIdentifier));
         for(; cData[nI] != '\0'; nI++) {
-          strIdentifier += cData[nI];
+          if(strIdentifierIndex == (sizeof(strIdentifier) - 1)) {
+            fprintf(stderr, "strIndentifier too small\n");
+            exit(EXIT_FAILURE);
+          }
+          strIdentifier[strIdentifierIndex++] = cData[nI];
         }
 
         struct TOCElement teNew;
-        teNew.strIdentifier = strdup(strIdentifier.c_str());
+        teNew.strIdentifier = strdup(strIdentifier);
         teNew.strGroup = strdup(strGroup);
         teNew.nID = nID;
         teNew.nType = nType;
