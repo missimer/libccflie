@@ -258,7 +258,7 @@ bool CTOC::startLogging(const char *strName, const char *strBlockName) {
          cData[3] == 0x00) {
         bCreateOK = true;
       } else {
-        std::cout << cData[3] << std::endl;
+        printf("%c\n", cData[3]);
       }
 
       if(crtpReceived) {
@@ -383,7 +383,7 @@ bool CTOC::registerLoggingBlock(const char *strName, double dFrequency) {
        cData[2] == nID &&
        cData[3] == 0x00) {
       bCreateOK = true;
-      std::cout << "Registered logging block `" << strName << "'" << std::endl;
+      printf("Registered logging block `%s'\n", strName);
     }
 
     if(crtpReceived) {
