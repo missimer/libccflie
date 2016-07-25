@@ -121,10 +121,16 @@ bool CTOC::processItem(CCRTPPacket* crtpItem) {
         int nID = cData[2];
         int nType = cData[3];
 
-        std::string strGroup;
+        int strGroupIndex = 0;
+        char strGroup[256];
         int nI;
+        memset(strGroup, 0, sizeof(strGroup));
         for(nI = 4; cData[nI] != '\0'; nI++) {
-          strGroup += cData[nI];
+          if(strGroupIndex == (sizeof(strGroup) - 1)) {
+            fprintf(stderr, "strGroup too small\n");
+            exit(EXIT_FAILURE);
+          }
+          strGroup[strGroupIndex++] = cData[nI];
         }
 
         nI++;
@@ -135,7 +141,7 @@ bool CTOC::processItem(CCRTPPacket* crtpItem) {
 
         struct TOCElement teNew;
         teNew.strIdentifier = strdup(strIdentifier.c_str());
-        teNew.strGroup = strdup(strGroup.c_str());
+        teNew.strGroup = strdup(strGroup);
         teNew.nID = nID;
         teNew.nType = nType;
         teNew.bIsLogging = false;
