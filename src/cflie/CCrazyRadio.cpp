@@ -131,9 +131,9 @@ bool CCrazyRadio::startRadio() {
     int nDataRate;
     char cDataRateType;
 
-    if(std::sscanf(m_strRadioIdentifier, "radio://%d/%d/%d%c",
-		   &nDongleNBR, &nRadioChannel, &nDataRate,
-		   &cDataRateType) != EOF) {
+    if(sscanf(m_strRadioIdentifier, "radio://%d/%d/%d%c",
+              &nDongleNBR, &nRadioChannel, &nDataRate,
+              &cDataRateType) != EOF) {
       std::cout << "Opening radio " << nDongleNBR << "/" << nRadioChannel << "/" << nDataRate << cDataRateType << std::endl;
 
       std::stringstream sts;
@@ -149,7 +149,7 @@ bool CCrazyRadio::startRadio() {
       sts << (ddDescriptor.bcdDevice >> 8);
       sts << ".";
       sts << (ddDescriptor.bcdDevice & 0x0ff);
-      std::sscanf(sts.str().c_str(), "%f", &m_fDeviceVersion);
+      sscanf(sts.str().c_str(), "%f", &m_fDeviceVersion);
 
       std::cout << "Got device version " << m_fDeviceVersion << std::endl;
       if(m_fDeviceVersion < 0.3) {
