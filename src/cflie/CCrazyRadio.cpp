@@ -134,7 +134,8 @@ bool CCrazyRadio::startRadio() {
     if(sscanf(m_strRadioIdentifier, "radio://%d/%d/%d%c",
               &nDongleNBR, &nRadioChannel, &nDataRate,
               &cDataRateType) != EOF) {
-      std::cout << "Opening radio " << nDongleNBR << "/" << nRadioChannel << "/" << nDataRate << cDataRateType << std::endl;
+      printf("Opening radio %d/%d/%d%c\n", nDongleNBR, nRadioChannel, nDataRate,
+             cDataRateType);
 
       std::stringstream sts;
       sts << nDataRate;
@@ -151,7 +152,7 @@ bool CCrazyRadio::startRadio() {
       sts << (ddDescriptor.bcdDevice & 0x0ff);
       sscanf(sts.str().c_str(), "%f", &m_fDeviceVersion);
 
-      std::cout << "Got device version " << m_fDeviceVersion << std::endl;
+      printf("Get device version %f\n", m_fDeviceVersion);
       if(m_fDeviceVersion < 0.3) {
 	return false;
       }
@@ -221,7 +222,7 @@ bool CCrazyRadio::readData(void *vdData, int *nMaxLength) {
   } else {
     switch(nReturn) {
     case LIBUSB_ERROR_TIMEOUT:
-      std::cout << "USB timeout" << std::endl;
+      printf("USB timeout\n");
       break;
 
     default:
@@ -339,7 +340,7 @@ CCRTPPacket *CCrazyRadio::sendPacket(CCRTPPacket *crtpSend, bool bDeleteAfterwar
 	std::memcpy(cText, &cData[1], nLength - 1);
 	cText[nLength - 1] = '\0';
 
-	std::cout << "Console text: " << cText << std::endl;
+        printf("Console text %s\n", cText);
       } break;
 
       case 5: { // Logging
