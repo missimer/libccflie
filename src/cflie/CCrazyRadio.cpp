@@ -67,8 +67,10 @@ void CCrazyRadio::closeDevice() {
   }
 }
 
-std::list<libusb_device*> CCrazyRadio::listDevices(int nVendorID, int nProductID) {
-  std::list<libusb_device*> lstDevices;
+libusb_device ** CCrazyRadio::listDevices(int nVendorID, int nProductID) {
+#define MAX_NUM_DEVICES 20
+  libusb_device **lstDevices = (libusb_device **)calloc(sizeof(libusb_device*), (MAX_NUM_DEVICES + 1));
+  int lstDevicesIndex = 0;
   ssize_t szCount;
   libusb_device **ptDevices;
 
@@ -81,7 +83,11 @@ std::list<libusb_device*> CCrazyRadio::listDevices(int nVendorID, int nProductID
 
     if(ddDescriptor.idVendor == nVendorID && ddDescriptor.idProduct == nProductID) {
       libusb_ref_device(devCurrent);
-      lstDevices.push_back(devCurrent);
+      if(lstDevicesIndex == MAX_NUM_DEVICES) {
+        fprintf(stderr, "Filled lstDevicesIndex\n");
+        exit(EXIT_FAILURE);
+      }
+      lstDevices[lstDevicesIndex++] = devCurrent;
     }
   }
 
@@ -94,28 +100,26 @@ std::list<libusb_device*> CCrazyRadio::listDevices(int nVendorID, int nProductID
 
 bool CCrazyRadio::openUSBDongle() {
   this->closeDevice();
-  std::list<libusb_device*> lstDevices = this->listDevices(0x1915, 0x7777);
+  libusb_device** lstDevices = this->listDevices(0x1915, 0x7777);
 
-  if(lstDevices.size() > 0) {
+  if(lstDevices[0] != NULL) {
     // For now, just take the first device. Give it a second to
     // initialize the system permissions.
     sleep(1.0);
 
-    libusb_device *devFirst = lstDevices.front();
+    libusb_device *devFirst = lstDevices[0];
+    int lstDevicesIndex;
     int nError = libusb_open(devFirst, &m_hndlDevice);
 
     if(nError == 0) {
       // Opening device OK. Don't free the first device just yet.
-      lstDevices.pop_front();
       m_devDevice = devFirst;
     }
 
-    for(std::list<libusb_device*>::iterator itDevice = lstDevices.begin();
-	itDevice != lstDevices.end();
-	itDevice++) {
-      libusb_device *devCurrent = *itDevice;
-
-      libusb_unref_device(devCurrent);
+    for(lstDevicesIndex = 1;
+        lstDevices[lstDevicesIndex] != NULL;
+        lstDevicesIndex++) {
+      libusb_unref_device(lstDevices[lstDevicesIndex]);
     }
 
     return !nError;

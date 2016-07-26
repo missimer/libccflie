@@ -92,7 +92,7 @@ private:
   CCRTPPacket* m_lstLoggingPackets[MAX_LIST_LOGGING_PACKETS];
 
   // Functions
-  std::list<libusb_device*> listDevices(int nVendorID, int nProductID);
+  libusb_device** listDevices(int nVendorID, int nProductID);
   bool openUSBDongle();
   bool claimInterface(int nInterface);
   void closeDevice();
