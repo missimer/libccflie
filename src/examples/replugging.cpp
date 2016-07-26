@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
   std::string strRadioURI = "radio://0/10/250K";
 
   std::cout << "Opening radio URI '" << strRadioURI << "'" << std::endl;
-  CCrazyRadio *crRadio = new CCrazyRadio(strRadioURI);
+  CCrazyRadio *crRadio = new CCrazyRadio(strRadioURI.c_str());
 
   g_bGoon = true;
   bool bDongleConnected = false;

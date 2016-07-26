@@ -31,8 +31,8 @@
 #include <stdio.h>
 
 
-CCrazyRadio::CCrazyRadio(std::string strRadioIdentifier) {
-  m_strRadioIdentifier = strdup(strRadioIdentifier.c_str());
+CCrazyRadio::CCrazyRadio(const char *strRadioIdentifier) {
+  m_strRadioIdentifier = strdup(strRadioIdentifier);
   m_enumPower = P_M18DBM;
 
   m_ctxContext = NULL;

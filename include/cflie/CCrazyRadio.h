@@ -116,7 +116,7 @@ public:
 
     \param strRadioIdentifier URI for the radio to be opened,
     e.g. "radio://<dongle-no>/<channel-no>/<datarate>". */
-  CCrazyRadio(std::string strRadioIdentifier);
+  CCrazyRadio(const char *strRadioIdentifier);
   /*! \brief Destructor for the radio communication class */
   ~CCrazyRadio();
 
