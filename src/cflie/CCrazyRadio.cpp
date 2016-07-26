@@ -337,7 +337,7 @@ CCRTPPacket *CCrazyRadio::sendPacket(CCRTPPacket *crtpSend, bool bDeleteAfterwar
       switch(sPort) {
       case 0: { // Console
 	char cText[nLength];
-	std::memcpy(cText, &cData[1], nLength - 1);
+	memcpy(cText, &cData[1], nLength - 1);
 	cText[nLength - 1] = '\0';
 
         printf("Console text %s\n", cText);
