@@ -565,11 +565,11 @@ void CTOC::processPackets(CCRTPPacket** lstPackets, int count) {
             nOffset += nByteLength;
             nIndex++;
           } else {
-            std::cerr << "Didn't find element ID " << nElementID
-                 << " in block ID " << nBlockID
-                 << " while parsing incoming logging data." << std::endl;
-            std::cerr << "This REALLY shouldn't be happening!" << std::endl;
-            std::exit(-1);
+            fprintf(stderr, "Didn't find element ID %d in block ID %d while "
+                    "parsing incoming logging data.\n"
+                    "This REALLY shouldn't be happening!\n",
+                    nElementID, nBlockID);
+            exit(EXIT_FAILURE);
           }
         }
       }
