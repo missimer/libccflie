@@ -144,17 +144,15 @@ bool CCrazyRadio::startRadio() {
       std::stringstream sts;
       sts << nDataRate;
       sts << cDataRateType;
-      std::string strDataRate = sts.str();
+      char strDataRate[256];
+      sprintf(strDataRate, "%d%c", nDataRate, cDataRateType);
 
       // Read device version
       libusb_device_descriptor ddDescriptor;
       libusb_get_device_descriptor(m_devDevice, &ddDescriptor);
-      sts.clear();
-      sts.str(std::string());
-      sts << (ddDescriptor.bcdDevice >> 8);
-      sts << ".";
-      sts << (ddDescriptor.bcdDevice & 0x0ff);
-      sscanf(sts.str().c_str(), "%f", &m_fDeviceVersion);
+      char tmpStr[256];
+      sprintf(tmpStr, "%d.%d", ddDescriptor.bcdDevice >> 8, ddDescriptor.bcdDevice & 0x0ff);
+      sscanf(tmpStr, "%f", &m_fDeviceVersion);
 
       printf("Get device version %f\n", m_fDeviceVersion);
       if(m_fDeviceVersion < 0.3) {
@@ -190,7 +188,7 @@ bool CCrazyRadio::startRadio() {
 	}
 
 	this->setChannel(nRadioChannel);
-	this->setDataRate(strDataRate.c_str());
+	this->setDataRate(strDataRate);
 
 	return true;
       }
