@@ -162,9 +162,9 @@ bool CCrazyflie::cycle() {
     if(m_bSendsSetpoints) {
       // Check if it's time to send the setpoint
       if(dTimeNow - m_dSetpointLastSent > m_dSendSetpointPeriod) {
-	// Send the current set point based on the previous calculations
-	this->sendSetpoint(m_fRoll, m_fPitch, m_fYaw, m_nThrust);
-	m_dSetpointLastSent = dTimeNow;
+        // Send the current set point based on the previous calculations
+        this->sendSetpoint(m_fRoll, m_fPitch, m_fYaw, m_nThrust);
+        m_dSetpointLastSent = dTimeNow;
       }
     } else {
       // Send a dummy packet for keepalive

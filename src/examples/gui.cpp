@@ -88,56 +88,56 @@ int main(int argc, char **argv) {
       int nOpenGLMode = GLFW_WINDOW;
 
       if(glfwOpenWindow(nWidth, nHeight,
-			nBitsPerComponent, nBitsPerComponent, nBitsPerComponent, nBitsPerComponent, nDepthBits, nStencilBits, nOpenGLMode)) {
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	float fAspectRatio = ((float)nHeight) / ((float)nWidth);
-	glFrustum(.5, -.5, -.5 * fAspectRatio, .5 * fAspectRatio, 1, 50);
-	glMatrixMode(GL_MODELVIEW);
+                        nBitsPerComponent, nBitsPerComponent, nBitsPerComponent, nBitsPerComponent, nDepthBits, nStencilBits, nOpenGLMode)) {
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        float fAspectRatio = ((float)nHeight) / ((float)nWidth);
+        glFrustum(.5, -.5, -.5 * fAspectRatio, .5 * fAspectRatio, 1, 50);
+        glMatrixMode(GL_MODELVIEW);
 
-	std::cout << "Running, exit with 'ESC'." << std::endl;
-	while(g_bGoon) {
-	  if(cflieCopter->cycle()) {
-	    drawGL(cflieCopter->roll(),
-		   cflieCopter->pitch(),
-		   cflieCopter->yaw());
+        std::cout << "Running, exit with 'ESC'." << std::endl;
+        while(g_bGoon) {
+          if(cflieCopter->cycle()) {
+            drawGL(cflieCopter->roll(),
+                   cflieCopter->pitch(),
+                   cflieCopter->yaw());
 
-	    if(glfwGetKey(GLFW_KEY_ESC) == GLFW_PRESS) {
-	      cflieCopter->setThrust(0);
-	      g_bGoon = false;
-	    } else {
-	      if(glfwGetKey(GLFW_KEY_SPACE) == GLFW_PRESS) {
-		cflieCopter->setThrust(45000);
-	      } else {
-		cflieCopter->setThrust(30000);
-	      }
+            if(glfwGetKey(GLFW_KEY_ESC) == GLFW_PRESS) {
+              cflieCopter->setThrust(0);
+              g_bGoon = false;
+            } else {
+              if(glfwGetKey(GLFW_KEY_SPACE) == GLFW_PRESS) {
+                cflieCopter->setThrust(45000);
+              } else {
+                cflieCopter->setThrust(30000);
+              }
 
-	      double dRoll = 0;
-	      double dPitch = 0;
-	      double dYaw = cflieCopter->yaw();
+              double dRoll = 0;
+              double dPitch = 0;
+              double dYaw = cflieCopter->yaw();
 
-	      if(glfwGetKey(GLFW_KEY_LEFT) == GLFW_PRESS) {
-		dRoll = 20.0f;//dYaw += 20.0f;
-	      } else if(glfwGetKey(GLFW_KEY_RIGHT) == GLFW_PRESS) {
-		dRoll = -20.0f;//dYaw -= 20.0f;
-	      }
+              if(glfwGetKey(GLFW_KEY_LEFT) == GLFW_PRESS) {
+                dRoll = 20.0f;//dYaw += 20.0f;
+              } else if(glfwGetKey(GLFW_KEY_RIGHT) == GLFW_PRESS) {
+                dRoll = -20.0f;//dYaw -= 20.0f;
+              }
 
-	      if(glfwGetKey(GLFW_KEY_UP) == GLFW_PRESS) {
-		dPitch = 20.0f;
-	      } else if(glfwGetKey(GLFW_KEY_DOWN) == GLFW_PRESS) {
-		dPitch = -20.0f;
-	      }
+              if(glfwGetKey(GLFW_KEY_UP) == GLFW_PRESS) {
+                dPitch = 20.0f;
+              } else if(glfwGetKey(GLFW_KEY_DOWN) == GLFW_PRESS) {
+                dPitch = -20.0f;
+              }
 
-	      cflieCopter->setRoll(dRoll);
-	      cflieCopter->setPitch(dPitch);
-	      cflieCopter->setYaw(dYaw);
-	    }
-	  } else {
-	    g_bGoon = false;
-	  }
-	}
+              cflieCopter->setRoll(dRoll);
+              cflieCopter->setPitch(dPitch);
+              cflieCopter->setYaw(dYaw);
+            }
+          } else {
+            g_bGoon = false;
+          }
+        }
 
-	glfwCloseWindow();
+        glfwCloseWindow();
       }
 
       glfwTerminate();

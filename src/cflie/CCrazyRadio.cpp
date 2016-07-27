@@ -156,7 +156,7 @@ bool CCrazyRadio::startRadio() {
 
       printf("Get device version %f\n", m_fDeviceVersion);
       if(m_fDeviceVersion < 0.3) {
-	return false;
+        return false;
       }
 
       // Set active configuration to 1
@@ -164,33 +164,33 @@ bool CCrazyRadio::startRadio() {
 
       // Claim interface
       if(this->claimInterface(0)) {
-	// Set power-up settings for dongle (>= v0.4)
-	this->setDataRate("2M");
-	this->setChannel(2);
+        // Set power-up settings for dongle (>= v0.4)
+        this->setDataRate("2M");
+        this->setChannel(2);
 
-	if(m_fDeviceVersion >= 0.4) {
-	  this->setContCarrier(false);
-	  char cAddress[5];
-	  cAddress[0] = 0xe7;
-	  cAddress[1] = 0xe7;
-	  cAddress[2] = 0xe7;
-	  cAddress[3] = 0xe7;
-	  cAddress[4] = 0xe7;
-	  this->setAddress(cAddress);
-	  this->setPower(P_0DBM);
-	  this->setARC(3);
-	  this->setARDBytes(32);
-	}
+        if(m_fDeviceVersion >= 0.4) {
+          this->setContCarrier(false);
+          char cAddress[5];
+          cAddress[0] = 0xe7;
+          cAddress[1] = 0xe7;
+          cAddress[2] = 0xe7;
+          cAddress[3] = 0xe7;
+          cAddress[4] = 0xe7;
+          this->setAddress(cAddress);
+          this->setPower(P_0DBM);
+          this->setARC(3);
+          this->setARDBytes(32);
+        }
 
-	// Initialize device
-	if(m_fDeviceVersion >= 0.4) {
-	  this->setARC(10);
-	}
+        // Initialize device
+        if(m_fDeviceVersion >= 0.4) {
+          this->setARC(10);
+        }
 
-	this->setChannel(nRadioChannel);
-	this->setDataRate(strDataRate);
+        this->setChannel(nRadioChannel);
+        this->setDataRate(strDataRate);
 
-	return true;
+        return true;
       }
     }
   }
@@ -338,18 +338,18 @@ CCRTPPacket *CCrazyRadio::sendPacket(CCRTPPacket *crtpSend, bool bDeleteAfterwar
 
       switch(sPort) {
       case 0: { // Console
-	char cText[nLength];
-	memcpy(cText, &cData[1], nLength - 1);
-	cText[nLength - 1] = '\0';
+        char cText[nLength];
+        memcpy(cText, &cData[1], nLength - 1);
+        cText[nLength - 1] = '\0';
 
         printf("Console text %s\n", cText);
       } break;
 
       case 5: { // Logging
-	if(crtpPacket->channel() == 2) {
-	  CCRTPPacket *crtpLog = new CCRTPPacket(cData, nLength, crtpPacket->channel());
-	  crtpLog->setChannel(crtpPacket->channel());
-	  crtpLog->setPort(crtpPacket->port());
+        if(crtpPacket->channel() == 2) {
+          CCRTPPacket *crtpLog = new CCRTPPacket(cData, nLength, crtpPacket->channel());
+          crtpLog->setChannel(crtpPacket->channel());
+          crtpLog->setPort(crtpPacket->port());
 
           if(m_lstLoggingPacketsCount == MAX_LIST_LOGGING_PACKETS) {
             fprintf(stderr, "m_lstLoggingPacketsCount reached %d\n",
@@ -357,7 +357,7 @@ CCRTPPacket *CCrazyRadio::sendPacket(CCRTPPacket *crtpSend, bool bDeleteAfterwar
             exit(EXIT_FAILURE);
           }
           m_lstLoggingPackets[m_lstLoggingPacketsCount++] = crtpLog;
-	}
+        }
       } break;
       }
     }
@@ -390,7 +390,7 @@ CCRTPPacket *CCrazyRadio::readACK() {
       crtpPacket = new CCRTPPacket(0);
 
       if(nBytesRead > 1) {
-      	crtpPacket->setData(&cBuffer[1], nBytesRead);
+              crtpPacket->setData(&cBuffer[1], nBytesRead);
       }
     } else {
       m_bAckReceived = false;
@@ -407,7 +407,7 @@ bool CCrazyRadio::ackReceived() {
 bool CCrazyRadio::usbOK() {
   libusb_device_descriptor ddDescriptor;
   return (libusb_get_device_descriptor(m_devDevice,
-				       &ddDescriptor) == 0);
+                                       &ddDescriptor) == 0);
 }
 
 CCRTPPacket *CCrazyRadio::waitForPacket() {
@@ -445,15 +445,15 @@ CCRTPPacket *CCrazyRadio::sendAndReceive(CCRTPPacket *crtpSend, int nPort, int n
 
     if(crtpReceived) {
       if(crtpReceived->port() == nPort &&
-	 crtpReceived->channel() == nChannel) {
-	crtpReturnvalue = crtpReceived;
-	bGoon = false;
+         crtpReceived->channel() == nChannel) {
+        crtpReturnvalue = crtpReceived;
+        bGoon = false;
       }
     }
 
     if(bGoon) {
       if(crtpReceived) {
-	delete crtpReceived;
+        delete crtpReceived;
       }
 
       usleep(nMicrosecondsWait);
