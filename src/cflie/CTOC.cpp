@@ -30,27 +30,27 @@
 
 
 CTOC::CTOC(CCrazyRadio *crRadio, int nPort) {
-  m_crRadio = crRadio;
-  m_nPort = nPort;
-  m_nItemCount = 0;
-  m_lstTOCElementsCount = 0;
-  m_lstLoggingBlocksCount = 0;
+  toc.m_crRadio = crRadio;
+  toc.m_nPort = nPort;
+  toc.m_nItemCount = 0;
+  toc.m_lstTOCElementsCount = 0;
+  toc.m_lstLoggingBlocksCount = 0;
 }
 
 CTOC::~CTOC() {
-  for(int i = 0; i < m_lstTOCElementsCount; i++) {
-    free((void *)m_lstTOCElements[i].strGroup);
-    free((void *)m_lstTOCElements[i].strIdentifier);
+  for(int i = 0; i < toc.m_lstTOCElementsCount; i++) {
+    free((void *)toc.m_lstTOCElements[i].strGroup);
+    free((void *)toc.m_lstTOCElements[i].strIdentifier);
   }
-  for(int i = 0; i < m_lstLoggingBlocksCount; i++) {
-    free((void*)m_lstLoggingBlocks[i].strName);
+  for(int i = 0; i < toc.m_lstLoggingBlocksCount; i++) {
+    free((void*)toc.m_lstLoggingBlocks[i].strName);
   }
 }
 
 bool CTOC::sendTOCPointerReset() {
   CCRTPPacket* crtpPacket = new CCRTPPacket(0x00, 0);
-  crtpPacket->setPort(m_nPort);
-  CCRTPPacket* crtpReceived = m_crRadio->sendPacket(crtpPacket, true);
+  crtpPacket->setPort(toc.m_nPort);
+  CCRTPPacket* crtpReceived = toc.m_crRadio->sendPacket(crtpPacket, true);
 
   if(crtpReceived) {
     delete crtpReceived;
@@ -64,11 +64,11 @@ bool CTOC::requestMetaData() {
   bool bReturnvalue = false;
 
   CCRTPPacket* crtpPacket = new CCRTPPacket(0x01, 0);
-  crtpPacket->setPort(m_nPort);
-  CCRTPPacket* crtpReceived = m_crRadio->sendAndReceive(crtpPacket);
+  crtpPacket->setPort(toc.m_nPort);
+  CCRTPPacket* crtpReceived = toc.m_crRadio->sendAndReceive(crtpPacket);
 
   if(crtpReceived->data()[1] == 0x01) {
-    m_nItemCount = crtpReceived->data()[2];
+    toc.m_nItemCount = crtpReceived->data()[2];
     bReturnvalue = true;
   }
 
@@ -94,8 +94,8 @@ bool CTOC::requestItem(int nID, bool bInitial) {
   CCRTPPacket* crtpPacket = new CCRTPPacket(cRequest,
                                             (bInitial ? 1 : 2),
                                             0);
-  crtpPacket->setPort(m_nPort);
-  CCRTPPacket* crtpReceived = m_crRadio->sendAndReceive(crtpPacket);
+  crtpPacket->setPort(toc.m_nPort);
+  CCRTPPacket* crtpReceived = toc.m_crRadio->sendAndReceive(crtpPacket);
 
   bReturnvalue = this->processItem(crtpReceived);
 
@@ -104,7 +104,7 @@ bool CTOC::requestItem(int nID, bool bInitial) {
 }
 
 bool CTOC::requestItems() {
-  for(int nI = 0; nI < m_nItemCount; nI++) {
+  for(int nI = 0; nI < toc.m_nItemCount; nI++) {
     this->requestItem(nI);
   }
 
@@ -112,7 +112,7 @@ bool CTOC::requestItems() {
 }
 
 bool CTOC::processItem(CCRTPPacket* crtpItem) {
-  if(crtpItem->port() == m_nPort) {
+  if(crtpItem->port() == toc.m_nPort) {
     if(crtpItem->channel() == 0) {
       char* cData = crtpItem->data();
       int nLength = crtpItem->dataLength();
@@ -153,11 +153,11 @@ bool CTOC::processItem(CCRTPPacket* crtpItem) {
         teNew.bIsLogging = false;
         teNew.dValue = 0;
 
-        if(m_lstTOCElementsCount == MAX_LST_TOC_ELEMENTS) {
-          fprintf(stderr, "m_lstTOCElementsCount == MAX_LST_TOC_ELEMENTS\n");
+        if(toc.m_lstTOCElementsCount == MAX_LST_TOC_ELEMENTS) {
+          fprintf(stderr, "toc.m_lstTOCElementsCount == MAX_LST_TOC_ELEMENTS\n");
           exit(EXIT_FAILURE);
         }
-        m_lstTOCElements[m_lstTOCElementsCount++] = teNew;
+        toc.m_lstTOCElements[toc.m_lstTOCElementsCount++] = teNew;
 
         // NOTE(winkler): For debug purposes only.
         //std::cout << strGroup << "." << strIdentifier << std::endl;
@@ -171,8 +171,8 @@ bool CTOC::processItem(CCRTPPacket* crtpItem) {
 }
 
 struct TOCElement CTOC::elementForName(const char *strName, bool *bFound) {
-  for(int i = 0; i < m_lstTOCElementsCount; i++) {
-    struct TOCElement teCurrent = m_lstTOCElements[i];
+  for(int i = 0; i < toc.m_lstTOCElementsCount; i++) {
+    struct TOCElement teCurrent = toc.m_lstTOCElements[i];
 
     char *strTempFullname = (char *)malloc(strlen(teCurrent.strGroup) +
                                            strlen(teCurrent.strIdentifier) + 2);
@@ -199,8 +199,8 @@ struct TOCElement CTOC::elementForName(const char *strName, bool *bFound) {
 }
 
 struct TOCElement CTOC::elementForID(int nID, bool *bFound) {
-  for(int i = 0; i < m_lstTOCElementsCount; i++) {
-    struct TOCElement teCurrent = m_lstTOCElements[i];
+  for(int i = 0; i < toc.m_lstTOCElementsCount; i++) {
+    struct TOCElement teCurrent = toc.m_lstTOCElements[i];
 
     if(nID == teCurrent.nID) {
       *bFound = true;
@@ -247,9 +247,9 @@ bool CTOC::startLogging(const char *strName, const char *strBlockName) {
     if(bFound) {
       char cPayload[5] = {0x01, lbCurrent.nID, teCurrent.nType, teCurrent.nID};
       CCRTPPacket* crtpLogVariable = new CCRTPPacket(cPayload, 4, 1);
-      crtpLogVariable->setPort(m_nPort);
+      crtpLogVariable->setPort(toc.m_nPort);
       crtpLogVariable->setChannel(1);
-      CCRTPPacket* crtpReceived = m_crRadio->sendAndReceive(crtpLogVariable, true);
+      CCRTPPacket* crtpReceived = toc.m_crRadio->sendAndReceive(crtpLogVariable, true);
 
       char* cData = crtpReceived->data();
       bool bCreateOK = false;
@@ -277,15 +277,15 @@ bool CTOC::startLogging(const char *strName, const char *strBlockName) {
 }
 
 bool CTOC::addElementToBlock(int nBlockID, int nElementID) {
-  for(int i = 0; i < m_lstLoggingBlocksCount; i++) {
-    struct LoggingBlock lbCurrent = m_lstLoggingBlocks[i];
+  for(int i = 0; i < toc.m_lstLoggingBlocksCount; i++) {
+    struct LoggingBlock lbCurrent = toc.m_lstLoggingBlocks[i];
 
     if(lbCurrent.nID == nBlockID) {
-      if(m_lstLoggingBlocks[i].lstElementIDsCount == MAX_LST_ELEMENT_IDS) {
+      if(toc.m_lstLoggingBlocks[i].lstElementIDsCount == MAX_LST_ELEMENT_IDS) {
         fprintf(stderr, "(*itBlock).lstElementIDsCount reached MAX_LST_ELEMENT_IDS");
         exit(EXIT_FAILURE);
       }
-      m_lstLoggingBlocks[i].lstElementIDs[m_lstLoggingBlocks[i].lstElementIDsCount++] = nElementID;
+      toc.m_lstLoggingBlocks[i].lstElementIDs[toc.m_lstLoggingBlocks[i].lstElementIDsCount++] = nElementID;
 
       return true;
     }
@@ -315,8 +315,8 @@ double CTOC::doubleValue(const char *strName) {
 }
 
 struct LoggingBlock CTOC::loggingBlockForName(const char *strName, bool *bFound) {
-  for(int i = 0; i < m_lstLoggingBlocksCount; i++) {
-    struct LoggingBlock lbCurrent = m_lstLoggingBlocks[i];
+  for(int i = 0; i < toc.m_lstLoggingBlocksCount; i++) {
+    struct LoggingBlock lbCurrent = toc.m_lstLoggingBlocks[i];
 
     if(strcmp(strName, lbCurrent.strName) == 0) {
       *bFound = true;
@@ -332,8 +332,8 @@ struct LoggingBlock CTOC::loggingBlockForName(const char *strName, bool *bFound)
 }
 
 struct LoggingBlock CTOC::loggingBlockForID(int nID, bool *bFound) {
-  for(int i = 0; i < m_lstLoggingBlocksCount; i++) {
-    struct LoggingBlock lbCurrent = m_lstLoggingBlocks[i];
+  for(int i = 0; i < toc.m_lstLoggingBlocksCount; i++) {
+    struct LoggingBlock lbCurrent = toc.m_lstLoggingBlocks[i];
 
     if(nID == lbCurrent.nID) {
       *bFound = true;
@@ -372,10 +372,10 @@ bool CTOC::registerLoggingBlock(const char *strName, double dFrequency) {
     char cPayload[4] = {0x00, nID, d10thOfMS};
 
     CCRTPPacket* crtpRegisterBlock = new CCRTPPacket(cPayload, 3, 1);
-    crtpRegisterBlock->setPort(m_nPort);
+    crtpRegisterBlock->setPort(toc.m_nPort);
     crtpRegisterBlock->setChannel(1);
 
-    CCRTPPacket* crtpReceived = m_crRadio->sendAndReceive(crtpRegisterBlock, true);
+    CCRTPPacket* crtpReceived = toc.m_crRadio->sendAndReceive(crtpRegisterBlock, true);
 
     char* cData = crtpReceived->data();
     bool bCreateOK = false;
@@ -397,11 +397,11 @@ bool CTOC::registerLoggingBlock(const char *strName, double dFrequency) {
       lbNew.nID = nID;
       lbNew.dFrequency = dFrequency;
 
-      if(m_lstLoggingBlocksCount == MAX_LST_LOGGING_BLOCKS) {
-        fprintf(stderr, "m_lstLoggingBlocksCont == MAX_LST_LOGGING_BLOCKS");
+      if(toc.m_lstLoggingBlocksCount == MAX_LST_LOGGING_BLOCKS) {
+        fprintf(stderr, "toc.m_lstLoggingBlocksCont == MAX_LST_LOGGING_BLOCKS");
         exit(EXIT_FAILURE);
       }
-      m_lstLoggingBlocks[m_lstLoggingBlocksCount++] = lbNew;
+      toc.m_lstLoggingBlocks[toc.m_lstLoggingBlocksCount++] = lbNew;
 
       return this->enableLogging(strName);
     }
@@ -419,10 +419,10 @@ bool CTOC::enableLogging(const char *strBlockName) {
     char cPayload[3] = {0x03, lbCurrent.nID, d10thOfMS};
 
     CCRTPPacket* crtpEnable = new CCRTPPacket(cPayload, 3, 1);
-    crtpEnable->setPort(m_nPort);
+    crtpEnable->setPort(toc.m_nPort);
     crtpEnable->setChannel(1);
 
-    CCRTPPacket* crtpReceived = m_crRadio->sendAndReceive(crtpEnable);
+    CCRTPPacket* crtpReceived = toc.m_crRadio->sendAndReceive(crtpEnable);
     delete crtpReceived;
 
     return true;
@@ -446,10 +446,10 @@ bool CTOC::unregisterLoggingBlockID(int nID) {
   char cPayload[2] = {0x02, nID};
 
   CCRTPPacket* crtpUnregisterBlock = new CCRTPPacket(cPayload, 2, 1);
-  crtpUnregisterBlock->setPort(m_nPort);
+  crtpUnregisterBlock->setPort(toc.m_nPort);
   crtpUnregisterBlock->setChannel(1);
 
-  CCRTPPacket* crtpReceived = m_crRadio->sendAndReceive(crtpUnregisterBlock, true);
+  CCRTPPacket* crtpReceived = toc.m_crRadio->sendAndReceive(crtpUnregisterBlock, true);
 
   if(crtpReceived) {
     delete crtpReceived;
@@ -594,12 +594,12 @@ int CTOC::elementIDinBlock(int nBlockID, int nElementIndex) {
 
 bool CTOC::setFloatValueForElementID(int nElementID, float fValue) {
   int nIndex = 0;
-  for(int i = i; i < m_lstTOCElementsCount; i++) {
-    struct TOCElement teCurrent = m_lstTOCElements[i];
+  for(int i = i; i < toc.m_lstTOCElementsCount; i++) {
+    struct TOCElement teCurrent = toc.m_lstTOCElements[i];
 
     if(teCurrent.nID == nElementID) {
       teCurrent.dValue = fValue; // We store floats as doubles
-      m_lstTOCElements[i] = teCurrent;
+      toc.m_lstTOCElements[i] = teCurrent;
       // std::cout << fValue << std::endl;
       return true;
     }

@@ -72,8 +72,7 @@ struct LoggingBlock {
 #define MAX_LST_TOC_ELEMENTS 64
 #define MAX_LST_LOGGING_BLOCKS 64
 
-class CTOC {
- private:
+struct toc {
   int m_nPort;
   CCrazyRadio *m_crRadio;
   int m_nItemCount;
@@ -81,6 +80,11 @@ class CTOC {
   struct TOCElement m_lstTOCElements[MAX_LST_TOC_ELEMENTS];
   int m_lstLoggingBlocksCount;
   struct LoggingBlock m_lstLoggingBlocks[MAX_LST_LOGGING_BLOCKS];
+};
+
+class CTOC {
+ private:
+  struct toc toc;
 
   bool requestInitialItem();
   bool requestItem(int nID, bool bInitial);
