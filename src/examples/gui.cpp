@@ -73,12 +73,12 @@ void drawGL(float fX, float fY, float fZ) {
 }
 
 int main(int argc, char **argv) {
-  CCrazyRadio *crRadio = new CCrazyRadio("radio://0/10/250K");
+  CCrazyRadio *crRadio = new CCrazyRadio("radio://0/80/250K");
 
   if(crRadio->startRadio()) {
-    CCrazyflie *cflieCopter = new CCrazyflie(crRadio);
-    cflieCopter->setSendSetpoints(true);
-    cflieCopter->setThrust(0);
+    struct crazyflie *cflieCopter = crazyflie_alloc(crRadio);
+    crazyflie_setSendSetpoints(cflieCopter, true);
+    crazyflie_setThrust(cflieCopter, 0);
 
     if(glfwInit() == GL_TRUE) {
       g_bGoon = true;
@@ -97,24 +97,24 @@ int main(int argc, char **argv) {
 
         std::cout << "Running, exit with 'ESC'." << std::endl;
         while(g_bGoon) {
-          if(cflieCopter->cycle()) {
-            drawGL(cflieCopter->roll(),
-                   cflieCopter->pitch(),
-                   cflieCopter->yaw());
+          if(crazyflie_cycle(cflieCopter)) {
+            drawGL(crazyflie_roll(cflieCopter),
+                   crazyflie_pitch(cflieCopter),
+                   crazyflie_yaw(cflieCopter));
 
             if(glfwGetKey(GLFW_KEY_ESC) == GLFW_PRESS) {
-              cflieCopter->setThrust(0);
+              crazyflie_setThrust(cflieCopter, 0);
               g_bGoon = false;
             } else {
               if(glfwGetKey(GLFW_KEY_SPACE) == GLFW_PRESS) {
-                cflieCopter->setThrust(45000);
+                crazyflie_setThrust(cflieCopter, 45000);
               } else {
-                cflieCopter->setThrust(30000);
+                crazyflie_setThrust(cflieCopter, 30000);
               }
 
               double dRoll = 0;
               double dPitch = 0;
-              double dYaw = cflieCopter->yaw();
+              double dYaw = crazyflie_yaw(cflieCopter);
 
               if(glfwGetKey(GLFW_KEY_LEFT) == GLFW_PRESS) {
                 dRoll = 20.0f;//dYaw += 20.0f;
@@ -128,9 +128,9 @@ int main(int argc, char **argv) {
                 dPitch = -20.0f;
               }
 
-              cflieCopter->setRoll(dRoll);
-              cflieCopter->setPitch(dPitch);
-              cflieCopter->setYaw(dYaw);
+              crazyflie_setRoll(cflieCopter, dRoll);
+              crazyflie_setPitch(cflieCopter, dPitch);
+              crazyflie_setYaw(cflieCopter, dYaw);
             }
           } else {
             g_bGoon = false;

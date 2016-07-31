@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
   int nReturnvalue = 0;
   int nThrust = 10001;
 
-  std::string strRadioURI = "radio://0/10/250K";
+  std::string strRadioURI = "radio://0/80/250K";
 
   std::cout << "Opening radio URI '" << strRadioURI << "'" << std::endl;
   CCrazyRadio *crRadio = new CCrazyRadio(strRadioURI.c_str());
@@ -87,13 +87,13 @@ int main(int argc, char **argv) {
       bDongleNotConnectedNotified = false;
       bDongleConnected = true;
 
-      CCrazyflie *cflieCopter = new CCrazyflie(crRadio);
-      cflieCopter->setSendSetpoints(true);
-      cflieCopter->setThrust(nThrust);
+      struct crazyflie *cflieCopter = crazyflie_alloc(crRadio);
+      crazyflie_setSendSetpoints(cflieCopter, true);
+      crazyflie_setThrust(cflieCopter, nThrust);
 
       while(g_bGoon && bDongleConnected) {
-        if(cflieCopter->cycle()) {
-          if(cflieCopter->copterInRange()) {
+        if(crazyflie_cycle(cflieCopter)) {
+          if(crazyflie_copterInRange(cflieCopter)) {
             if(!bCopterWasInRange || !bRangeStateChangedNotified) {
               // Event triggered when the copter first comes in range.
               std::cout << "In range" << std::endl;

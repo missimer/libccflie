@@ -96,216 +96,198 @@ struct crazyflie {
   enum State m_enumState;
 };
 
-/*! \brief Crazyflie Nano convenience controller class
+struct crazyflie * crazyflie_alloc(CCrazyRadio *crRadio);
+void crazyflie_init(struct crazyflie *cf, CCrazyRadio *crRadio);
+void crazyflie_destroy(struct crazyflie *cf);
+void crazyflie_free(struct crazyflie *cf);
 
-  The class containing the mechanisms for starting sensor readings,
-  ordering set point setting, selecting and running controllers and
-  calculating information based on the current sensor readings. */
-class CCrazyflie {
 
-  struct crazyflie cf;
 
-  // Functions
-  bool readTOCParameters();
-  bool readTOCLogs();
+// Functions
+bool crazyflie_readTOCParameters(struct crazyflie *cf);
+bool crazyflie_readTOCLogs(struct crazyflie *cf);
 
-  /*! \brief Send a set point to the copter controller
+/*! \brief Send a set point to the copter controller
 
-    Send the set point for the internal copter controllers. The
-    copter will then try to achieve the given roll, pitch, yaw and
-    thrust. These values can be set manually but are managed by the
-    herein available controller(s) if one is switched on to reach
-    desired positions.
+  Send the set point for the internal copter controllers. The
+  copter will then try to achieve the given roll, pitch, yaw and
+  thrust. These values can be set manually but are managed by the
+  herein available controller(s) if one is switched on to reach
+  desired positions.
 
-    \param fRoll The desired roll value.
-    \param fPitch The desired pitch value.
-    \param fYaw The desired yaw value.
-    \param sThrust The desired thrust value.
-    \return Boolean value denoting whether or not the command could be sent successfully. */
-  bool sendSetpoint(float fRoll, float fPitch, float fYaw, short sThrust);
+  \param fRoll The desired roll value.
+  \param fPitch The desired pitch value.
+  \param fYaw The desired yaw value.
+  \param sThrust The desired thrust value.
+  \return Boolean value denoting whether or not the command could be sent successfully. */
+bool crazyflie_sendSetpoint(struct crazyflie *cf, float fRoll, float fPitch, float fYaw, short sThrust);
 
-  void disableLogging();
+void crazyflie_disableLogging(struct crazyflie *cf);
 
-  void enableStabilizerLogging();
-  void enableGyroscopeLogging();
-  void enableAccelerometerLogging();
+void crazyflie_enableStabilizerLogging(struct crazyflie *cf);
+void crazyflie_enableGyroscopeLogging(struct crazyflie *cf);
+void crazyflie_enableAccelerometerLogging(struct crazyflie *cf);
 
-  void disableStabilizerLogging();
-  void disableGyroscopeLogging();
-  void disableAccelerometerLogging();
+void crazyflie_disableStabilizerLogging(struct crazyflie *cf);
+void crazyflie_disableGyroscopeLogging(struct crazyflie *cf);
+void crazyflie_disableAccelerometerLogging(struct crazyflie *cf);
 
-  void enableBatteryLogging();
-  void disableBatteryLogging();
+void crazyflie_enableBatteryLogging(struct crazyflie *cf);
+void crazyflie_disableBatteryLogging(struct crazyflie *cf);
 
-  bool startLogging();
-  bool stopLogging();
+bool crazyflie_startLogging(struct crazyflie *cf);
+bool crazyflie_stopLogging(struct crazyflie *cf);
 
-  void enableMagnetometerLogging();
-  void disableMagnetometerLogging();
+void crazyflie_enableMagnetometerLogging(struct crazyflie *cf);
+void crazyflie_disableMagnetometerLogging(struct crazyflie *cf);
 
-  void enableAltimeterLogging();
-  void disableAltimeterLogging();
+void crazyflie_enableAltimeterLogging(struct crazyflie *cf);
+void crazyflie_disableAltimeterLogging(struct crazyflie *cf);
 
-  double currentTime();
+double crazyflie_currentTime(struct crazyflie *cf);
 
- public:
-  /*! \brief Constructor for the copter convenience class
 
-    Constructor for the CCrazyflie class, taking a CCrazyRadio radio
-    interface instance as a parameter.
+/*! \brief Set the thrust control set point
 
-    \param crRadio Initialized (and started) instance of the
-    CCrazyRadio class, denoting the USB dongle to communicate
-    with. */
-  CCrazyflie(CCrazyRadio *crRadio);
-  /*! \brief Destructor for the copter convenience class
+  The thrust value that will be sent to the internal copter
+  controller as a set point.
 
-    Destructor, deleting all internal variables (except for the
-    CCrazyRadio radio instance given in the constructor). */
-  ~CCrazyflie();
+  \param nThrust The thrust value to send (> 10000) */
+void crazyflie_setThrust(struct crazyflie *cf, int nThrust);
+/*! \brief Returns the current thrust
 
-  /*! \brief Set the thrust control set point
+  \return The current thrust value as reported by the copter */
+int crazyflie_thrust(struct crazyflie *cf);
 
-    The thrust value that will be sent to the internal copter
-    controller as a set point.
+/*! \brief Set the roll control set point
 
-    \param nThrust The thrust value to send (> 10000) */
-  void setThrust(int nThrust);
-  /*! \brief Returns the current thrust
+  The roll value that will be sent to the internal copter
+  controller as a set point.
 
-    \return The current thrust value as reported by the copter */
-  int thrust();
+  \param fRoll The roll value to send */
+void crazyflie_setRoll(struct crazyflie *cf, float fRoll);
+/*! \brief Returns the current roll
 
-  /*! \brief Set the roll control set point
+  Roll values are in degree, ranging from -180.0deg to 180.0deg.
 
-    The roll value that will be sent to the internal copter
-    controller as a set point.
+  \return The current roll value as reported by the copter */
+float crazyflie_roll(struct crazyflie *cf);
 
-    \param fRoll The roll value to send */
-  void setRoll(float fRoll);
-  /*! \brief Returns the current roll
+/*! \brief Set the pitch control set point
 
-    Roll values are in degree, ranging from -180.0deg to 180.0deg.
+  The pitch value that will be sent to the internal copter
+  controller as a set point.
 
-    \return The current roll value as reported by the copter */
-  float roll();
+  \param fPitch The pitch value to send */
+void crazyflie_setPitch(struct crazyflie *cf, float fPitch);
+/*! \brief Returns the current pitch
 
-  /*! \brief Set the pitch control set point
+  Pitch values are in degree, ranging from -180.0deg to 180.0deg.
 
-    The pitch value that will be sent to the internal copter
-    controller as a set point.
+  \return The current pitch value as reported by the copter */
+float crazyflie_pitch(struct crazyflie *cf);
 
-    \param fPitch The pitch value to send */
-  void setPitch(float fPitch);
-  /*! \brief Returns the current pitch
+/*! \brief Set the yaw control set point
 
-    Pitch values are in degree, ranging from -180.0deg to 180.0deg.
+  The yaw value that will be sent to the internal copter
+  controller as a set point.
 
-    \return The current pitch value as reported by the copter */
-  float pitch();
+  \param fYaw The yaw value to send */
+void crazyflie_setYaw(struct crazyflie *cf, float fYaw);
+/*! \brief Returns the current yaw
 
-  /*! \brief Set the yaw control set point
+  Yaw values are in degree, ranging from -180.0deg to 180.0deg.
 
-    The yaw value that will be sent to the internal copter
-    controller as a set point.
+  \return The current yaw value as reported by the copter */
+float crazyflie_yaw(struct crazyflie *cf);
 
-    \param fYaw The yaw value to send */
-  void setYaw(float fYaw);
-  /*! \brief Returns the current yaw
+/*! \brief Manages internal calculation operations
 
-    Yaw values are in degree, ranging from -180.0deg to 180.0deg.
+  Should be called during every 'cycle' of the main program using
+  this class. Things like sensor reading processing, integral
+  calculation and controller signal application are performed
+  here. This function also triggers communication with the
+  copter. Not calling it for too long will cause a disconnect from
+  the copter's radio.
 
-    \return The current yaw value as reported by the copter */
-  float yaw();
+  \return Returns a boolean value denoting the current status of the
+  radio dongle. If it returns 'false', the dongle was most likely
+  removed or somehow else disconnected from the host machine. If it
+  returns 'true', the dongle connection works fine. */
+bool crazyflie_cycle(struct crazyflie *cf);
+/*! \brief Signals whether the copter is in range or not
 
-  /*! \brief Manages internal calculation operations
+  Returns whether the radio connection to the copter is currently
+  active.
 
-    Should be called during every 'cycle' of the main program using
-    this class. Things like sensor reading processing, integral
-    calculation and controller signal application are performed
-    here. This function also triggers communication with the
-    copter. Not calling it for too long will cause a disconnect from
-    the copter's radio.
+  \return Returns 'true' is the copter is in range and radio
+  communication works, and 'false' if the copter is either out of
+  range or is switched off. */
+bool crazyflie_copterInRange(struct crazyflie *cf);
 
-    \return Returns a boolean value denoting the current status of the
-    radio dongle. If it returns 'false', the dongle was most likely
-    removed or somehow else disconnected from the host machine. If it
-    returns 'true', the dongle connection works fine. */
-  bool cycle();
-  /*! \brief Signals whether the copter is in range or not
+/*! \brief Whether or not the copter was initialized successfully.
 
-    Returns whether the radio connection to the copter is currently
-    active.
+  \returns Boolean value denoting the initialization status of the
+  copter communication. */
+bool crazyflie_isInitialized(struct crazyflie *cf);
 
-    \return Returns 'true' is the copter is in range and radio
-    communication works, and 'false' if the copter is either out of
-    range or is switched off. */
-  bool copterInRange();
+/*! \brief Set whether setpoints are currently sent while cycle()
 
-  /*! \brief Whether or not the copter was initialized successfully.
+  While performing the cycle() function, the currently set setpoint
+  is sent to the copter regularly. If this is not the case, dummy
+  packets are sent. Using this mechanism, you can effectively switch
+  off sending new commands to the copter.
 
-    \returns Boolean value denoting the initialization status of the
-    copter communication. */
-  bool isInitialized();
+  Default value: `false`
 
-  /*! \brief Set whether setpoints are currently sent while cycle()
+  \param bSendSetpoints When set to `true`, the current setpoint is
+  sent while cycle(). Otherwise, not. */
+void crazyflie_setSendSetpoints(struct crazyflie *cf, bool bSendSetpoints);
 
-    While performing the cycle() function, the currently set setpoint
-    is sent to the copter regularly. If this is not the case, dummy
-    packets are sent. Using this mechanism, you can effectively switch
-    off sending new commands to the copter.
+/*! \brief Whether or not setpoints are currently sent to the copter
 
-    Default value: `false`
+  \return Boolean value denoting whether or not the current setpoint
+  is sent to the copter while performing cycle(). */
+bool crazyflie_sendsSetpoints(struct crazyflie *cf);
 
-    \param bSendSetpoints When set to `true`, the current setpoint is
-    sent while cycle(). Otherwise, not. */
-  void setSendSetpoints(bool bSendSetpoints);
+/*! \brief Read back a sensor value you subscribed to
 
-  /*! \brief Whether or not setpoints are currently sent to the copter
+  Possible sensor values might be:
+  * stabilizer.yaw
+  * stabilizer.roll
+  * stabilizer.pitch
+  * pm.vbat
 
-    \return Boolean value denoting whether or not the current setpoint
-    is sent to the copter while performing cycle(). */
-  bool sendsSetpoints();
+  The possible key names strongly depend on your firmware. If you
+  don't know what to do with this, just use the convience functions
+  like roll(), pitch(), yaw(), and batteryLevel().
 
-  /*! \brief Read back a sensor value you subscribed to
+  \return Double value denoting the current value of the requested
+  log variable. */
+double crazyflie_sensorDoubleValue(struct crazyflie *cf, const char *strName);
 
-    Possible sensor values might be:
-    * stabilizer.yaw
-    * stabilizer.roll
-    * stabilizer.pitch
-    * pm.vbat
+/*! \brief Report the current battery level
 
-    The possible key names strongly depend on your firmware. If you
-    don't know what to do with this, just use the convience functions
-    like roll(), pitch(), yaw(), and batteryLevel().
+  \return Double value denoting the battery level as reported by the
+  copter. */
+double crazyflie_batteryLevel(struct crazyflie *cf);
 
-    \return Double value denoting the current value of the requested
-    log variable. */
-  double sensorDoubleValue(const char *strName);
+float crazyflie_accX(struct crazyflie *cf);
+float crazyflie_accY(struct crazyflie *cf);
+float crazyflie_accZ(struct crazyflie *cf);
+float crazyflie_accZW(struct crazyflie *cf);
+float crazyflie_asl(struct crazyflie *cf);
+float crazyflie_aslLong(struct crazyflie *cf);
+float crazyflie_temperature(struct crazyflie *cf);
+float crazyflie_pressure(struct crazyflie *cf);
+float crazyflie_gyroX(struct crazyflie *cf);
+float crazyflie_gyroY(struct crazyflie *cf);
+float crazyflie_gyroZ(struct crazyflie *cf);
+float crazyflie_batteryState(struct crazyflie *cf);
+float crazyflie_magX(struct crazyflie *cf);
+float crazyflie_magY(struct crazyflie *cf);
+float crazyflie_magZ(struct crazyflie *cf);
 
-  /*! \brief Report the current battery level
-
-    \return Double value denoting the battery level as reported by the
-    copter. */
-  double batteryLevel();
-
-  float accX();
-  float accY();
-  float accZ();
-  float accZW();
-  float asl();
-  float aslLong();
-  float temperature();
-  float pressure();
-  float gyroX();
-  float gyroY();
-  float gyroZ();
-  float batteryState();
-  float magX();
-  float magY();
-  float magZ();
-
-};
 
 
 #endif /* __C_CRAZYFLIE_H__ */
