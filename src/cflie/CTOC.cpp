@@ -47,10 +47,10 @@ CTOC::~CTOC() {
   }
 }
 
-bool CTOC::sendTOCPointerReset() {
+bool toc_sendTOCPointerReset(struct toc *toc) {
   CCRTPPacket* crtpPacket = new CCRTPPacket(0x00, 0);
-  crtpPacket->setPort(toc.m_nPort);
-  CCRTPPacket* crtpReceived = toc.m_crRadio->sendPacket(crtpPacket, true);
+  crtpPacket->setPort(toc->m_nPort);
+  CCRTPPacket* crtpReceived = toc->m_crRadio->sendPacket(crtpPacket, true);
 
   if(crtpReceived) {
     delete crtpReceived;
@@ -60,15 +60,15 @@ bool CTOC::sendTOCPointerReset() {
   return false;
 }
 
-bool CTOC::requestMetaData() {
+bool toc_requestMetaData(struct toc *toc) {
   bool bReturnvalue = false;
 
   CCRTPPacket* crtpPacket = new CCRTPPacket(0x01, 0);
-  crtpPacket->setPort(toc.m_nPort);
-  CCRTPPacket* crtpReceived = toc.m_crRadio->sendAndReceive(crtpPacket);
+  crtpPacket->setPort(toc->m_nPort);
+  CCRTPPacket* crtpReceived = toc->m_crRadio->sendAndReceive(crtpPacket);
 
   if(crtpReceived->data()[1] == 0x01) {
-    toc.m_nItemCount = crtpReceived->data()[2];
+    toc->m_nItemCount = crtpReceived->data()[2];
     bReturnvalue = true;
   }
 
@@ -76,15 +76,15 @@ bool CTOC::requestMetaData() {
   return bReturnvalue;
 }
 
-bool CTOC::requestInitialItem() {
-  return this->requestItem(0, true);
+bool toc_requestInitialItem(struct toc *toc) {
+  return toc_requestItem(toc, 0, true);
 }
 
-bool CTOC::requestItem(int nID) {
-  return this->requestItem(nID, false);
+bool toc_requestItem(struct toc *toc, int nID) {
+  return toc_requestItem(toc, nID, false);
 }
 
-bool CTOC::requestItem(int nID, bool bInitial) {
+bool toc_requestItem(struct toc *toc, int nID, bool bInitial) {
   bool bReturnvalue = false;
 
   char cRequest[2];
@@ -94,25 +94,25 @@ bool CTOC::requestItem(int nID, bool bInitial) {
   CCRTPPacket* crtpPacket = new CCRTPPacket(cRequest,
                                             (bInitial ? 1 : 2),
                                             0);
-  crtpPacket->setPort(toc.m_nPort);
-  CCRTPPacket* crtpReceived = toc.m_crRadio->sendAndReceive(crtpPacket);
+  crtpPacket->setPort(toc->m_nPort);
+  CCRTPPacket* crtpReceived = toc->m_crRadio->sendAndReceive(crtpPacket);
 
-  bReturnvalue = this->processItem(crtpReceived);
+  bReturnvalue = toc_processItem(toc, crtpReceived);
 
   delete crtpReceived;
   return bReturnvalue;
 }
 
-bool CTOC::requestItems() {
-  for(int nI = 0; nI < toc.m_nItemCount; nI++) {
-    this->requestItem(nI);
+bool toc_requestItems(struct toc *toc) {
+  for(int nI = 0; nI < toc->m_nItemCount; nI++) {
+    toc_requestItem(toc, nI);
   }
 
   return true;
 }
 
-bool CTOC::processItem(CCRTPPacket* crtpItem) {
-  if(crtpItem->port() == toc.m_nPort) {
+bool toc_processItem(struct toc *toc, CCRTPPacket* crtpItem) {
+  if(crtpItem->port() == toc->m_nPort) {
     if(crtpItem->channel() == 0) {
       char* cData = crtpItem->data();
       int nLength = crtpItem->dataLength();
@@ -153,11 +153,11 @@ bool CTOC::processItem(CCRTPPacket* crtpItem) {
         teNew.bIsLogging = false;
         teNew.dValue = 0;
 
-        if(toc.m_lstTOCElementsCount == MAX_LST_TOC_ELEMENTS) {
-          fprintf(stderr, "toc.m_lstTOCElementsCount == MAX_LST_TOC_ELEMENTS\n");
+        if(toc->m_lstTOCElementsCount == MAX_LST_TOC_ELEMENTS) {
+          fprintf(stderr, "toc->m_lstTOCElementsCount == MAX_LST_TOC_ELEMENTS\n");
           exit(EXIT_FAILURE);
         }
-        toc.m_lstTOCElements[toc.m_lstTOCElementsCount++] = teNew;
+        toc->m_lstTOCElements[toc->m_lstTOCElementsCount++] = teNew;
 
         // NOTE(winkler): For debug purposes only.
         //std::cout << strGroup << "." << strIdentifier << std::endl;

@@ -60,8 +60,8 @@ CCrazyflie::~CCrazyflie() {
 }
 
 bool CCrazyflie::readTOCParameters() {
-  if(m_tocParameters->requestMetaData()) {
-    if(m_tocParameters->requestItems()) {
+  if(toc_requestMetaData(&m_tocParameters->toc)) {
+    if(toc_requestItems(&m_tocParameters->toc)) {
       return true;
     }
   }
@@ -70,8 +70,8 @@ bool CCrazyflie::readTOCParameters() {
 }
 
 bool CCrazyflie::readTOCLogs() {
-  if(m_tocLogs->requestMetaData()) {
-    if(m_tocLogs->requestItems()) {
+  if(toc_requestMetaData(&m_tocLogs->toc)) {
+    if(toc_requestItems(&m_tocLogs->toc)) {
       return true;
     }
   }

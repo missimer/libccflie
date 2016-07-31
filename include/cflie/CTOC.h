@@ -82,24 +82,24 @@ struct toc {
   struct LoggingBlock m_lstLoggingBlocks[MAX_LST_LOGGING_BLOCKS];
 };
 
+
+bool toc_requestInitialItem(struct toc *toc);
+bool toc_requestItem(struct toc *toc, int nID, bool bInitial); //bInitial default is false;
+bool toc_processItem(struct toc *toc, CCRTPPacket* crtpItem);
+
+bool toc_sendTOCPointerReset(struct toc *toc);
+bool toc_requestMetaData(struct toc *toc);
+bool toc_requestItems(struct toc *toc);
+
+
 class CTOC {
- private:
+ public:
   struct toc toc;
-
-  bool requestInitialItem();
-  bool requestItem(int nID, bool bInitial);
-  bool requestItem(int nID);
-  bool processItem(CCRTPPacket* crtpItem);
-
-  CCRTPPacket* sendAndReceive(CCRTPPacket* crtpSend, int nChannel);
 
  public:
   CTOC(CCrazyRadio* crRadio, int nPort);
   ~CTOC();
 
-  bool sendTOCPointerReset();
-  bool requestMetaData();
-  bool requestItems();
 
   struct TOCElement elementForName(const char *strName, bool *bFound);
   struct TOCElement elementForID(int nID, bool *bFound);
