@@ -53,14 +53,9 @@ enum State {
   STATE_NORMAL_OPERATION = 5
 };
 
-/*! \brief Crazyflie Nano convenience controller class
 
-  The class containing the mechanisms for starting sensor readings,
-  ordering set point setting, selecting and running controllers and
-  calculating information based on the current sensor readings. */
-class CCrazyflie {
- private:
-  // Variables
+struct crazyflie {
+    // Variables
   int m_nAckMissTolerance;
   int m_nAckMissCounter;
   /*! \brief Internal pointer to the initialized CCrazyRadio radio
@@ -99,6 +94,16 @@ class CCrazyflie {
   struct toc *m_tocParameters;
   struct toc *m_tocLogs;
   enum State m_enumState;
+};
+
+/*! \brief Crazyflie Nano convenience controller class
+
+  The class containing the mechanisms for starting sensor readings,
+  ordering set point setting, selecting and running controllers and
+  calculating information based on the current sensor readings. */
+class CCrazyflie {
+
+  struct crazyflie cf;
 
   // Functions
   bool readTOCParameters();
