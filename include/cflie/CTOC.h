@@ -91,6 +91,11 @@ bool toc_sendTOCPointerReset(struct toc *toc);
 bool toc_requestMetaData(struct toc *toc);
 bool toc_requestItems(struct toc *toc);
 
+struct TOCElement toc_elementForName(struct toc *toc, const char *strName, bool *bFound);
+struct TOCElement toc_elementForID(struct toc *toc, int nID, bool *bFound);
+int toc_idForName(struct toc *toc, char *strName);
+int toc_typeForName(struct toc *toc, char *strName);
+
 
 class CTOC {
  public:
@@ -100,11 +105,6 @@ class CTOC {
   CTOC(CCrazyRadio* crRadio, int nPort);
   ~CTOC();
 
-
-  struct TOCElement elementForName(const char *strName, bool *bFound);
-  struct TOCElement elementForID(int nID, bool *bFound);
-  int idForName(char *strName);
-  int typeForName(char *strName);
 
   // For loggable variables only
   bool registerLoggingBlock(const char *strName, double dFrequency);

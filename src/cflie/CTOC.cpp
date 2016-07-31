@@ -170,9 +170,9 @@ bool toc_processItem(struct toc *toc, CCRTPPacket* crtpItem) {
   return false;
 }
 
-struct TOCElement CTOC::elementForName(const char *strName, bool *bFound) {
-  for(int i = 0; i < toc.m_lstTOCElementsCount; i++) {
-    struct TOCElement teCurrent = toc.m_lstTOCElements[i];
+struct TOCElement toc_elementForName(struct toc *toc, const char *strName, bool *bFound) {
+  for(int i = 0; i < toc->m_lstTOCElementsCount; i++) {
+    struct TOCElement teCurrent = toc->m_lstTOCElements[i];
 
     char *strTempFullname = (char *)malloc(strlen(teCurrent.strGroup) +
                                            strlen(teCurrent.strIdentifier) + 2);
@@ -198,9 +198,9 @@ struct TOCElement CTOC::elementForName(const char *strName, bool *bFound) {
   return teEmpty;
 }
 
-struct TOCElement CTOC::elementForID(int nID, bool *bFound) {
-  for(int i = 0; i < toc.m_lstTOCElementsCount; i++) {
-    struct TOCElement teCurrent = toc.m_lstTOCElements[i];
+struct TOCElement toc_elementForID(struct toc *toc, int nID, bool *bFound) {
+  for(int i = 0; i < toc->m_lstTOCElementsCount; i++) {
+    struct TOCElement teCurrent = toc->m_lstTOCElements[i];
 
     if(nID == teCurrent.nID) {
       *bFound = true;
@@ -214,10 +214,10 @@ struct TOCElement CTOC::elementForID(int nID, bool *bFound) {
   return teEmpty;
 }
 
-int CTOC::idForName(char *strName) {
+int toc_idForName(struct toc *toc, char *strName) {
   bool bFound;
 
-  struct TOCElement teResult = this->elementForName(strName, &bFound);
+  struct TOCElement teResult = toc_elementForName(toc, strName, &bFound);
 
   if(bFound) {
     return teResult.nID;
@@ -226,10 +226,10 @@ int CTOC::idForName(char *strName) {
   return -1;
 }
 
-int CTOC::typeForName(char *strName) {
+int toc_typeForName(struct toc *toc, char *strName) {
   bool bFound;
 
-  struct TOCElement teResult = this->elementForName(strName, &bFound);
+  struct TOCElement teResult = toc_elementForName(toc, strName, &bFound);
 
   if(bFound) {
     return teResult.nType;
@@ -243,7 +243,7 @@ bool CTOC::startLogging(const char *strName, const char *strBlockName) {
   struct LoggingBlock lbCurrent = this->loggingBlockForName(strBlockName, &bFound);
 
   if(bFound) {
-    struct TOCElement teCurrent = this->elementForName(strName, &bFound);
+    struct TOCElement teCurrent = toc_elementForName(&toc, strName, &bFound);
     if(bFound) {
       char cPayload[5] = {0x01, lbCurrent.nID, teCurrent.nType, teCurrent.nID};
       CCRTPPacket* crtpLogVariable = new CCRTPPacket(cPayload, 4, 1);
@@ -305,7 +305,7 @@ bool CTOC::isLogging(const char *strName) {
 double CTOC::doubleValue(const char *strName) {
   bool bFound;
 
-  struct TOCElement teResult = this->elementForName(strName, &bFound);
+  struct TOCElement teResult = toc_elementForName(&toc, strName, &bFound);
 
   if(bFound) {
     return teResult.dValue;
@@ -482,7 +482,7 @@ void CTOC::processPackets(CCRTPPacket** lstPackets, int count) {
         while(nIndex < lbCurrent.lstElementIDsCount) {
           int nElementID = this->elementIDinBlock(nBlockID, nIndex);
           bool bFound;
-          struct TOCElement teCurrent = this->elementForID(nElementID, &bFound);
+          struct TOCElement teCurrent = toc_elementForID(&toc, nElementID, &bFound);
 
           if(bFound) {
             int nByteLength = 0;
