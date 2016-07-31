@@ -82,6 +82,11 @@ struct toc {
   struct LoggingBlock m_lstLoggingBlocks[MAX_LST_LOGGING_BLOCKS];
 };
 
+struct toc * toc_alloc(CCrazyRadio *crRadio, int nPort);
+void toc_init(struct toc *toc, CCrazyRadio *crRadio, int nPort);
+void toc_destroy(struct toc *toc);
+void toc_free(struct toc *toc);
+
 
 bool toc_requestInitialItem(struct toc *toc);
 bool toc_requestItem(struct toc *toc, int nID, bool bInitial); //bInitial default is false;
@@ -96,37 +101,25 @@ struct TOCElement toc_elementForID(struct toc *toc, int nID, bool *bFound);
 int toc_idForName(struct toc *toc, char *strName);
 int toc_typeForName(struct toc *toc, char *strName);
 
+// For loggable variables only
+bool toc_registerLoggingBlock(struct toc *toc, const char *strName, double dFrequency);
+bool toc_unregisterLoggingBlock(struct toc *toc, const char *strName);
+struct LoggingBlock toc_loggingBlockForName(struct toc *toc, const char *strName, bool *bFound);
+struct LoggingBlock toc_loggingBlockForID(struct toc *toc, int nID, bool *bFound);
 
-class CTOC {
- public:
-  struct toc toc;
+bool toc_startLogging(struct toc *toc, const char *strName, const char *strBlockName);
+bool toc_stopLogging(struct toc *toc, const char *strName);
+bool toc_isLogging(struct toc *toc, const char *strName);
 
- public:
-  CTOC(CCrazyRadio* crRadio, int nPort);
-  ~CTOC();
+double toc_doubleValue(struct toc *toc, const char *strName);
 
+bool toc_enableLogging(struct toc *toc, const char *strBlockName);
 
-  // For loggable variables only
-  bool registerLoggingBlock(const char *strName, double dFrequency);
-  bool unregisterLoggingBlock(const char *strName);
-  struct LoggingBlock loggingBlockForName(const char *strName, bool *bFound);
-  struct LoggingBlock loggingBlockForID(int nID, bool *bFound);
+void toc_processPackets(struct toc *toc, CCRTPPacket** lstPackets, int count);
 
-  bool startLogging(const char *strName, const char *strBlockName);
-  bool stopLogging(const char *strName);
-  bool isLogging(const char *strName);
-
-  double doubleValue(const char *strName);
-
-  bool enableLogging(const char *strBlockName);
-
-  void processPackets(CCRTPPacket** lstPackets, int count);
-
-  int elementIDinBlock(int nBlockID, int nElementIndex);
-  bool setFloatValueForElementID(int nElementID, float fValue);
-  bool addElementToBlock(int nBlockID, int nElementID);
-  bool unregisterLoggingBlockID(int nID);
-};
-
+int toc_elementIDinBlock(struct toc *toc, int nBlockID, int nElementIndex);
+bool toc_setFloatValueForElementID(struct toc *toc, int nElementID, float fValue);
+bool toc_addElementToBlock(struct toc *toc, int nBlockID, int nElementID);
+bool toc_unregisterLoggingBlockID(struct toc *toc, int nID);
 
 #endif /* __C_TOC_H__ */

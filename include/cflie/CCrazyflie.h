@@ -96,8 +96,8 @@ class CCrazyflie {
   double m_dSendSetpointPeriod;
   double m_dSetpointLastSent;
   bool m_bSendsSetpoints;
-  CTOC *m_tocParameters;
-  CTOC *m_tocLogs;
+  struct toc *m_tocParameters;
+  struct toc *m_tocLogs;
   enum State m_enumState;
 
   // Functions
