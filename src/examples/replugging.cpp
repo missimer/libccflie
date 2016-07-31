@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
   std::string strRadioURI = "radio://0/80/250K";
 
   std::cout << "Opening radio URI '" << strRadioURI << "'" << std::endl;
-  CCrazyRadio *crRadio = new CCrazyRadio(strRadioURI.c_str());
+  struct crazyradio *crRadio = crazyradio_alloc(strRadioURI.c_str());
 
   g_bGoon = true;
   bool bDongleConnected = false;
@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
   while(g_bGoon) {
     // Is the dongle connected? If not, try to connect it.
     if(!bDongleConnected) {
-      while(!crRadio->startRadio() && g_bGoon) {
+      while(!crazyradio_startRadio(crRadio) && g_bGoon) {
         if(!bDongleNotConnectedNotified) {
           std::cout << "Waiting for dongle." << std::endl;
           bDongleNotConnectedNotified = true;
@@ -127,12 +127,12 @@ int main(int argc, char **argv) {
         // copter). Right now, this is a dummy branch.
       }
 
-      delete cflieCopter;
+      crazyflie_free(cflieCopter);
     }
   }
 
   std::cout << "Cleaning up" << std::endl;
-  delete crRadio;
+  crazyradio_free(crRadio);
 
   return nReturnvalue;
 }

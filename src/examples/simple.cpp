@@ -37,9 +37,9 @@
 
 
 int main(int argc, char **argv) {
-  CCrazyRadio *crRadio = new CCrazyRadio("radio://0/80/250K");
+  struct crazyradio *crRadio = crazyradio_alloc("radio://0/80/250K");
 
-  if(crRadio->startRadio()) {
+  if(crazyradio_startRadio(crRadio)) {
     struct crazyflie *cflieCopter = crazyflie_alloc(crRadio);
     crazyflie_setThrust(cflieCopter, 10001);
 
@@ -76,11 +76,11 @@ int main(int argc, char **argv) {
       // basic you will need for controlling the copter.
     }
 
-    delete cflieCopter;
+    crazyflie_free(cflieCopter);
   } else {
     std::cerr << "Could not connect to dongle. Did you plug it in?" << std::endl;
   }
 
-  delete crRadio;
+  crazyradio_free(crRadio);
   return 0;
 }

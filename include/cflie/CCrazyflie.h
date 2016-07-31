@@ -58,9 +58,9 @@ struct crazyflie {
     // Variables
   int m_nAckMissTolerance;
   int m_nAckMissCounter;
-  /*! \brief Internal pointer to the initialized CCrazyRadio radio
+  /*! \brief Internal pointer to the initialized struct crazyradio radio
       interface instance. */
-  CCrazyRadio *m_crRadio;
+  struct crazyradio *m_crRadio;
   /*! \brief The current thrust to send as a set point to the
       copter. */
   int m_nThrust;
@@ -96,8 +96,8 @@ struct crazyflie {
   enum State m_enumState;
 };
 
-struct crazyflie * crazyflie_alloc(CCrazyRadio *crRadio);
-void crazyflie_init(struct crazyflie *cf, CCrazyRadio *crRadio);
+struct crazyflie * crazyflie_alloc(struct crazyradio *crRadio);
+void crazyflie_init(struct crazyflie *cf, struct crazyradio *crRadio);
 void crazyflie_destroy(struct crazyflie *cf);
 void crazyflie_free(struct crazyflie *cf);
 

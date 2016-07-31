@@ -74,7 +74,7 @@ struct LoggingBlock {
 
 struct toc {
   int m_nPort;
-  CCrazyRadio *m_crRadio;
+  struct crazyradio *m_crRadio;
   int m_nItemCount;
   int m_lstTOCElementsCount;
   struct TOCElement m_lstTOCElements[MAX_LST_TOC_ELEMENTS];
@@ -82,8 +82,8 @@ struct toc {
   struct LoggingBlock m_lstLoggingBlocks[MAX_LST_LOGGING_BLOCKS];
 };
 
-struct toc * toc_alloc(CCrazyRadio *crRadio, int nPort);
-void toc_init(struct toc *toc, CCrazyRadio *crRadio, int nPort);
+struct toc * toc_alloc(struct crazyradio *crRadio, int nPort);
+void toc_init(struct toc *toc, struct crazyradio *crRadio, int nPort);
 void toc_destroy(struct toc *toc);
 void toc_free(struct toc *toc);
 

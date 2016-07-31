@@ -28,7 +28,7 @@
 
 #include <cflie/CCrazyflie.h>
 
-struct crazyflie * crazyflie_alloc(CCrazyRadio *crRadio) {
+struct crazyflie * crazyflie_alloc(struct crazyradio *crRadio) {
 
   struct crazyflie *cf = (struct crazyflie *)malloc(sizeof(struct crazyflie));
 
@@ -39,7 +39,7 @@ struct crazyflie * crazyflie_alloc(CCrazyRadio *crRadio) {
   return cf;
 }
 
-void crazyflie_init(struct crazyflie *cf, CCrazyRadio *crRadio) {
+void crazyflie_init(struct crazyflie *cf, struct crazyradio *crRadio) {
   cf->m_crRadio = crRadio;
 
   // Review these values
@@ -105,7 +105,7 @@ bool crazyflie_sendSetpoint(struct crazyflie *cf, float fRoll, float fPitch, flo
   memcpy(&cBuffer[3 * sizeof(float)], &sThrust, sizeof(short));
 
   CCRTPPacket *crtpPacket = new CCRTPPacket(cBuffer, nSize, 3);
-  CCRTPPacket *crtpReceived = cf->m_crRadio->sendPacket(crtpPacket);
+  CCRTPPacket *crtpReceived = crazyradio_sendPacket(cf->m_crRadio, crtpPacket);
 
   delete crtpPacket;
   if(crtpReceived != NULL) {
@@ -158,7 +158,7 @@ bool crazyflie_cycle(struct crazyflie *cf) {
 
   case STATE_ZERO_MEASUREMENTS: {
     int count;
-    CCRTPPacket **packets = cf->m_crRadio->popLoggingPackets(&count);
+    CCRTPPacket **packets = crazyradio_popLoggingPackets(cf->m_crRadio, &count);
     toc_processPackets(cf->m_tocLogs, packets, count);
 
     // NOTE(winkler): Here, we can do measurement zero'ing. This is
@@ -171,7 +171,7 @@ bool crazyflie_cycle(struct crazyflie *cf) {
   case STATE_NORMAL_OPERATION: {
     // Shove over the sensor readings from the radio to the Logs TOC.
     int count;
-    CCRTPPacket **packets = cf->m_crRadio->popLoggingPackets(&count);
+    CCRTPPacket **packets = crazyradio_popLoggingPackets(cf->m_crRadio, &count);
     toc_processPackets(cf->m_tocLogs, packets, count);
 
     if(cf->m_bSendsSetpoints) {
@@ -183,7 +183,7 @@ bool crazyflie_cycle(struct crazyflie *cf) {
       }
     } else {
       // Send a dummy packet for keepalive
-      cf->m_crRadio->sendDummyPacket();
+      crazyradio_sendDummyPacket(cf->m_crRadio);
     }
   } break;
 
@@ -191,13 +191,13 @@ bool crazyflie_cycle(struct crazyflie *cf) {
   } break;
   }
 
-  if(cf->m_crRadio->ackReceived()) {
+  if(crazyradio_ackReceived(cf->m_crRadio)) {
     cf->m_nAckMissCounter = 0;
   } else {
     cf->m_nAckMissCounter++;
   }
 
-  return cf->m_crRadio->usbOK();
+  return crazyradio_usbOK(cf->m_crRadio);
 }
 
 bool crazyflie_copterInRange(struct crazyflie *cf) {

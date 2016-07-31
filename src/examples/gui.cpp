@@ -73,9 +73,9 @@ void drawGL(float fX, float fY, float fZ) {
 }
 
 int main(int argc, char **argv) {
-  CCrazyRadio *crRadio = new CCrazyRadio("radio://0/80/250K");
+  struct crazyradio *crRadio = crazyradio_alloc("radio://0/80/250K");
 
-  if(crRadio->startRadio()) {
+  if(crazyradio_startRadio(crRadio)) {
     struct crazyflie *cflieCopter = crazyflie_alloc(crRadio);
     crazyflie_setSendSetpoints(cflieCopter, true);
     crazyflie_setThrust(cflieCopter, 0);
@@ -143,12 +143,12 @@ int main(int argc, char **argv) {
       glfwTerminate();
     }
 
-    delete cflieCopter;
+    crazyflie_free(cflieCopter);
   } else {
     std::cerr << "Radio could not be started." << std::endl;
   }
 
-  delete crRadio;
+  crazyradio_free(crRadio);
 
   return 0;
 }
