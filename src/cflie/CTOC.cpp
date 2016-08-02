@@ -61,7 +61,7 @@ void toc_free(struct toc *toc) {
 
 bool toc_sendTOCPointerReset(struct toc *toc) {
   CCRTPPacket* crtpPacket = new CCRTPPacket(0x00, 0);
-  crtpPacket->setPort(toc->m_nPort);
+  crtppacket_setPort(&crtpPacket->packet, toc->m_nPort);
   CCRTPPacket* crtpReceived = crazyradio_sendPacket(toc->m_crRadio, crtpPacket, true);
 
   if(crtpReceived) {
@@ -76,11 +76,11 @@ bool toc_requestMetaData(struct toc *toc) {
   bool bReturnvalue = false;
 
   CCRTPPacket* crtpPacket = new CCRTPPacket(0x01, 0);
-  crtpPacket->setPort(toc->m_nPort);
+  crtppacket_setPort(&crtpPacket->packet, toc->m_nPort);
   CCRTPPacket* crtpReceived = crazyradio_sendAndReceive(toc->m_crRadio, crtpPacket);
 
-  if(crtpReceived->data()[1] == 0x01) {
-    toc->m_nItemCount = crtpReceived->data()[2];
+  if(crtppacket_data(&crtpReceived->packet)[1] == 0x01) {
+    toc->m_nItemCount = crtppacket_data(&crtpReceived->packet)[2];
     bReturnvalue = true;
   }
 
@@ -106,7 +106,7 @@ bool toc_requestItem(struct toc *toc, int nID, bool bInitial) {
   CCRTPPacket* crtpPacket = new CCRTPPacket(cRequest,
                                             (bInitial ? 1 : 2),
                                             0);
-  crtpPacket->setPort(toc->m_nPort);
+  crtppacket_setPort(&crtpPacket->packet, toc->m_nPort);
   CCRTPPacket* crtpReceived = crazyradio_sendAndReceive(toc->m_crRadio, crtpPacket);
 
   bReturnvalue = toc_processItem(toc, crtpReceived);
@@ -124,10 +124,10 @@ bool toc_requestItems(struct toc *toc) {
 }
 
 bool toc_processItem(struct toc *toc, CCRTPPacket* crtpItem) {
-  if(crtpItem->port() == toc->m_nPort) {
-    if(crtpItem->channel() == 0) {
-      char* cData = crtpItem->data();
-      int nLength = crtpItem->dataLength();
+  if(crtppacket_port(&crtpItem->packet) == toc->m_nPort) {
+    if(crtppacket_channel(&crtpItem->packet) == 0) {
+      char* cData = crtppacket_data(&crtpItem->packet);
+      int nLength = crtppacket_dataLength(&crtpItem->packet);
 
       if(cData[1] == 0x0) { // Command identification ok?
         int nID = cData[2];
@@ -259,11 +259,11 @@ bool toc_startLogging(struct toc *toc, const char *strName, const char *strBlock
     if(bFound) {
       char cPayload[5] = {0x01, lbCurrent.nID, teCurrent.nType, teCurrent.nID};
       CCRTPPacket* crtpLogVariable = new CCRTPPacket(cPayload, 4, 1);
-      crtpLogVariable->setPort(toc->m_nPort);
-      crtpLogVariable->setChannel(1);
+      crtppacket_setPort(&crtpLogVariable->packet, toc->m_nPort);
+      crtppacket_setChannel(&crtpLogVariable->packet, 1);
       CCRTPPacket* crtpReceived = crazyradio_sendAndReceive(toc->m_crRadio, crtpLogVariable, true);
 
-      char* cData = crtpReceived->data();
+      char* cData = crtppacket_data(&crtpReceived->packet);
       bool bCreateOK = false;
       if(cData[1] == 0x01 &&
          cData[2] == lbCurrent.nID &&
@@ -384,12 +384,12 @@ bool toc_registerLoggingBlock(struct toc *toc, const char *strName, double dFreq
     char cPayload[4] = {0x00, nID, d10thOfMS};
 
     CCRTPPacket* crtpRegisterBlock = new CCRTPPacket(cPayload, 3, 1);
-    crtpRegisterBlock->setPort(toc->m_nPort);
-    crtpRegisterBlock->setChannel(1);
+    crtppacket_setPort(&crtpRegisterBlock->packet, toc->m_nPort);
+    crtppacket_setChannel(&crtpRegisterBlock->packet, 1);
 
     CCRTPPacket* crtpReceived = crazyradio_sendAndReceive(toc->m_crRadio, crtpRegisterBlock, true);
 
-    char* cData = crtpReceived->data();
+    char* cData = crtppacket_data(&crtpReceived->packet);
     bool bCreateOK = false;
     if(cData[1] == 0x00 &&
        cData[2] == nID &&
@@ -431,8 +431,8 @@ bool toc_enableLogging(struct toc *toc, const char *strBlockName) {
     char cPayload[3] = {0x03, lbCurrent.nID, d10thOfMS};
 
     CCRTPPacket* crtpEnable = new CCRTPPacket(cPayload, 3, 1);
-    crtpEnable->setPort(toc->m_nPort);
-    crtpEnable->setChannel(1);
+    crtppacket_setPort(&crtpEnable->packet, toc->m_nPort);
+    crtppacket_setChannel(&crtpEnable->packet, 1);
 
     CCRTPPacket* crtpReceived = crazyradio_sendAndReceive(toc->m_crRadio, crtpEnable);
     delete crtpReceived;
@@ -458,8 +458,8 @@ bool toc_unregisterLoggingBlockID(struct toc *toc, int nID) {
   char cPayload[2] = {0x02, nID};
 
   CCRTPPacket* crtpUnregisterBlock = new CCRTPPacket(cPayload, 2, 1);
-  crtpUnregisterBlock->setPort(toc->m_nPort);
-  crtpUnregisterBlock->setChannel(1);
+  crtppacket_setPort(&crtpUnregisterBlock->packet, toc->m_nPort);
+  crtppacket_setChannel(&crtpUnregisterBlock->packet, 1);
 
   CCRTPPacket* crtpReceived = crazyradio_sendAndReceive(toc->m_crRadio, crtpUnregisterBlock, true);
 
@@ -477,14 +477,14 @@ void toc_processPackets(struct toc *toc, CCRTPPacket** lstPackets, int count) {
     for(i = 0; i < count; i++) {
       CCRTPPacket* crtpPacket = lstPackets[i];
 
-      char* cData = crtpPacket->data();
+      char* cData = crtppacket_data(&crtpPacket->packet);
       float fValue;
       memcpy(&fValue, &cData[5], 4);
 
       char* cLogdata = &cData[5];
       int nOffset = 0;
       int nIndex = 0;
-      int nAvailableLogBytes = crtpPacket->dataLength() - 5;
+      int nAvailableLogBytes = crtppacket_dataLength(&crtpPacket->packet) - 5;
 
       int nBlockID = cData[1];
       bool bFound;

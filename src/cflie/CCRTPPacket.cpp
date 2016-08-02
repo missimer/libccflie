@@ -27,110 +27,112 @@
 
 
 #include <cflie/CCRTPPacket.h>
+#include <stdlib.h>
 
 
 CCRTPPacket::CCRTPPacket(int nPort) {
-  this->basicSetup();
-  this->setPort(nPort);
+  crtppacket_basicSetup(&this->packet);
+  crtppacket_setPort(&this->packet, nPort);
 }
 
 CCRTPPacket::CCRTPPacket(char *cData, int nDataLength, int nPort) {
-  this->basicSetup();
-  this->setPort(nPort);
+  crtppacket_basicSetup(&this->packet);
+  crtppacket_setPort(&this->packet, nPort);
 
-  this->setData(cData, nDataLength);
+  crtppacket_setData(&this->packet, cData, nDataLength);
 }
 
 CCRTPPacket::CCRTPPacket(char cData, int nPort) {
-  this->basicSetup();
-  this->setPort(nPort);
+  crtppacket_basicSetup(&this->packet);
+  crtppacket_setPort(&this->packet, nPort);
 
-  this->setData(&cData, 1);
+  crtppacket_setData(&this->packet, &cData, 1);
 }
 
 CCRTPPacket::~CCRTPPacket() {
-  this->clearData();
+  crtppacket_clearData(&this->packet);
 }
 
-void CCRTPPacket::basicSetup() {
-  m_cData = NULL;
-  m_nDataLength = 0;
-  m_nPort = 0;
-  m_nChannel = 0;
-  m_bIsPingPacket = false;
+void crtppacket_basicSetup(struct crtppacket *packet) {
+  packet->m_cData = NULL;
+  packet->m_nDataLength = 0;
+  packet->m_nPort = 0;
+  packet->m_nChannel = 0;
+  packet->m_bIsPingPacket = false;
 }
 
-void CCRTPPacket::setData(char *cData, int nDataLength) {
-  this->clearData();
+void crtppacket_setData(struct crtppacket *packet, char *cData, int nDataLength) {
+  crtppacket_clearData(packet);
 
-  m_cData = new char[nDataLength]();
-  memcpy(m_cData, cData, nDataLength);
-  m_nDataLength = nDataLength;
+  packet->m_cData = (char *)malloc(sizeof(char) * nDataLength);
+  memcpy(packet->m_cData, cData, nDataLength);
+  packet->m_nDataLength = nDataLength;
 }
 
-char *CCRTPPacket::data() {
-  return m_cData;
+char *crtppacket_data(struct crtppacket *packet) {
+  return packet->m_cData;
 }
 
-int CCRTPPacket::dataLength() {
-  return m_nDataLength;
+int crtppacket_dataLength(struct crtppacket *packet) {
+  return packet->m_nDataLength;
 }
 
-void CCRTPPacket::clearData() {
-  if(m_cData != NULL) {
-    delete[] m_cData;
-    m_cData = NULL;
-    m_nDataLength = 0;
+void crtppacket_clearData(struct crtppacket *packet) {
+  if(packet->m_cData != NULL) {
+    free(packet->m_cData);
+    packet->m_cData = NULL;
+    packet->m_nDataLength = 0;
   }
 }
 
-char *CCRTPPacket::sendableData() {
-  char *cSendable = new char[this->sendableDataLength()]();
+char *crtppacket_sendableData(struct crtppacket *packet) {
+  char *cSendable =
+    (char *)malloc(sizeof(char) * crtppacket_sendableDataLength(packet));
 
-  if(m_bIsPingPacket) {
+  if(packet->m_bIsPingPacket) {
     cSendable[0] = 0xff;
   } else {
     // Header byte
-    cSendable[0] = (m_nPort << 4) | 0b00001100 | (m_nChannel & 0x03);
+    cSendable[0] = (packet->m_nPort << 4) | 0b00001100 | (packet->m_nChannel & 0x03);
 
     // Payload
-    memcpy(&cSendable[1], m_cData, m_nDataLength);
+    memcpy(&cSendable[1], packet->m_cData, packet->m_nDataLength);
 
     // Finishing byte
-    //cSendable[m_nDataLength + 1] = 0x27;
+    //cSendable[packet->m_nDataLength + 1] = 0x27;
   }
 
   return cSendable;
 }
 
-int CCRTPPacket::sendableDataLength() {
-  if(m_bIsPingPacket) {
+int crtppacket_sendableDataLength(struct crtppacket *packet) {
+  if(packet->m_bIsPingPacket) {
     return 1;
   } else {
-    return m_nDataLength + 1;//2;
+    return packet->m_nDataLength + 1;//2;
   }
 }
 
-void CCRTPPacket::setPort(int nPort) {
-  m_nPort = nPort;
+void crtppacket_setPort(struct crtppacket *packet, int nPort) {
+  packet->m_nPort = nPort;
 }
 
-int CCRTPPacket::port() {
-  return m_nPort;
+int crtppacket_port(struct crtppacket *packet) {
+  return packet->m_nPort;
 }
 
-void CCRTPPacket::setChannel(int nChannel) {
-  m_nChannel = nChannel;
+void crtppacket_setChannel(struct crtppacket *packet, int nChannel) {
+  packet->m_nChannel = nChannel;
 }
 
-int CCRTPPacket::channel() {
-  return m_nChannel;
+int crtppacket_channel(struct crtppacket *packet) {
+  return packet->m_nChannel;
 }
 
-void CCRTPPacket::setIsPingPacket(bool bIsPingPacket) {
-  m_bIsPingPacket = bIsPingPacket;
+void crtppacket_setIsPingPacket(struct crtppacket *packet, bool bIsPingPacket) {
+  packet->m_bIsPingPacket = bIsPingPacket;
 }
 
-bool CCRTPPacket::isPingPacket() {
-  return m_bIsPingPacket;
+bool crtppacket_isPingPacket(struct crtppacket *packet) {
+  return packet->m_bIsPingPacket;
 }
