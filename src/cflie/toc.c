@@ -126,7 +126,6 @@ bool toc_processItem(struct toc *toc, struct crtppacket* crtpItem) {
   if(crtppacket_port(crtpItem) == toc->m_nPort) {
     if(crtppacket_channel(crtpItem) == 0) {
       char* cData = crtppacket_data(crtpItem);
-      int nLength = crtppacket_dataLength(crtpItem);
 
       if(cData[1] == 0x0) { // Command identification ok?
         int nID = cData[2];
@@ -307,10 +306,12 @@ bool toc_addElementToBlock(struct toc *toc, int nBlockID, int nElementID) {
 
 bool toc_stopLogging(struct toc *toc, const char *strName) {
   // TODO: Implement me.
+  return false;
 }
 
 bool toc_isLogging(struct toc *toc, const char *strName) {
   // TODO: Implement me.
+  return false;
 }
 
 double toc_doubleValue(struct toc *toc, const char *strName) {
@@ -483,7 +484,6 @@ void toc_processPackets(struct toc *toc, struct crtppacket** lstPackets, int cou
       char* cLogdata = &cData[5];
       int nOffset = 0;
       int nIndex = 0;
-      int nAvailableLogBytes = crtppacket_dataLength(crtpPacket) - 5;
 
       int nBlockID = cData[1];
       bool bFound;
@@ -604,7 +604,6 @@ int toc_elementIDinBlock(struct toc *toc, int nBlockID, int nElementIndex) {
 }
 
 bool toc_setFloatValueForElementID(struct toc *toc, int nElementID, float fValue) {
-  int nIndex = 0;
   for(int i = i; i < toc->m_lstTOCElementsCount; i++) {
     struct TOCElement teCurrent = toc->m_lstTOCElements[i];
 
