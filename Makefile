@@ -27,7 +27,12 @@ DFILES := $(patsubst %.o,%.d,$(OBJS))
 CC=gcc
 AR=ar
 
+.PHONY: all clean TAGS
+
 all: $(LIBRARY) $(EXAMPLES)
+
+TAGS:
+	ctags -eR
 
 $(_LIBRARY): $(LIBRARY)
 
@@ -51,6 +56,7 @@ $(EX_OBJS): %.o : %.c
 clean:
 	rm -rf $(BIN_FOLDERS) $(LIB_FOLDER) $(OBJS) $(DFILES)
 	find -name "*~" -delete
+	rm -rf TAGS
 
 $(OBJS): Makefile
 
