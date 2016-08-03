@@ -90,7 +90,7 @@ void toc_free(struct toc *toc);
 
 bool toc_requestInitialItem(struct toc *toc);
 bool toc_requestItem(struct toc *toc, int nID, bool bInitial); //bInitial default is false;
-bool toc_processItem(struct toc *toc, CCRTPPacket* crtpItem);
+bool toc_processItem(struct toc *toc, struct crtppacket* crtpItem);
 
 bool toc_sendTOCPointerReset(struct toc *toc);
 bool toc_requestMetaData(struct toc *toc);
@@ -115,7 +115,7 @@ double toc_doubleValue(struct toc *toc, const char *strName);
 
 bool toc_enableLogging(struct toc *toc, const char *strBlockName);
 
-void toc_processPackets(struct toc *toc, CCRTPPacket** lstPackets, int count);
+void toc_processPackets(struct toc *toc, struct crtppacket** lstPackets, int count);
 
 int toc_elementIDinBlock(struct toc *toc, int nBlockID, int nElementIndex);
 bool toc_setFloatValueForElementID(struct toc *toc, int nElementID, float fValue);

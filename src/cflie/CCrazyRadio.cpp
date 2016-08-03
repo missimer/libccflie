@@ -213,8 +213,8 @@ bool crazyradio_startRadio(struct crazyradio *radio) {
   return false;
 }
 
-CCRTPPacket *crazyradio_writeData(struct crazyradio *radio, void *vdData, int nLength) {
-  CCRTPPacket *crtpPacket = NULL;
+struct crtppacket *crazyradio_writeData(struct crazyradio *radio, void *vdData, int nLength) {
+  struct crtppacket *crtpPacket = NULL;
 
   int nActuallyWritten;
   int nReturn = libusb_bulk_transfer(radio->m_hndlDevice, (0x01 | LIBUSB_ENDPOINT_OUT), (unsigned char*)vdData, nLength, &nActuallyWritten, 1000);
@@ -333,23 +333,23 @@ bool crazyradio_claimInterface(struct crazyradio *radio, int nInterface) {
   return libusb_claim_interface(radio->m_hndlDevice, nInterface) == 0;
 }
 
-CCRTPPacket *crazyradio_sendPacket(struct crazyradio *radio, CCRTPPacket *crtpSend, bool bDeleteAfterwards) {
-  CCRTPPacket *crtpPacket = NULL;
+struct crtppacket *crazyradio_sendPacket(struct crazyradio *radio, struct crtppacket *crtpSend, bool bDeleteAfterwards) {
+  struct crtppacket *crtpPacket = NULL;
 
-  char *cSendable = crtppacket_sendableData(&crtpSend->packet);
-  crtpPacket = crazyradio_writeData(radio, cSendable, crtppacket_sendableDataLength(&crtpSend->packet));
+  char *cSendable = crtppacket_sendableData(crtpSend);
+  crtpPacket = crazyradio_writeData(radio, cSendable, crtppacket_sendableDataLength(crtpSend));
 
   delete[] cSendable;
 
   if(crtpPacket) {
-    char *cData = crtppacket_data(&crtpPacket->packet);
-    int nLength = crtppacket_dataLength(&crtpPacket->packet);
+    char *cData = crtppacket_data(crtpPacket);
+    int nLength = crtppacket_dataLength(crtpPacket);
 
     if(nLength > 0) {
       short sPort = (cData[0] & 0xf0) >> 4;
-      crtppacket_setPort(&crtpPacket->packet, sPort);
+      crtppacket_setPort(crtpPacket, sPort);
       short sChannel = cData[0] & 0b00000011;
-      crtppacket_setChannel(&crtpPacket->packet, sChannel);
+      crtppacket_setChannel(crtpPacket, sChannel);
 
       switch(sPort) {
       case 0: { // Console
@@ -361,10 +361,10 @@ CCRTPPacket *crazyradio_sendPacket(struct crazyradio *radio, CCRTPPacket *crtpSe
       } break;
 
       case 5: { // Logging
-        if(crtppacket_channel(&crtpPacket->packet) == 2) {
-          CCRTPPacket *crtpLog = new CCRTPPacket(cData, nLength, crtppacket_channel(&crtpPacket->packet));
-          crtppacket_setChannel(&crtpLog->packet, crtppacket_channel(&crtpPacket->packet));
-          crtppacket_setPort(&crtpLog->packet, crtppacket_port(&crtpPacket->packet));
+        if(crtppacket_channel(crtpPacket) == 2) {
+          struct crtppacket *crtpLog = crtppacket_alloc(cData, nLength, crtppacket_channel(crtpPacket));
+          crtppacket_setChannel(crtpLog, crtppacket_channel(crtpPacket));
+          crtppacket_setPort(crtpLog, crtppacket_port(crtpPacket));
 
           if(radio->m_lstLoggingPacketsCount == MAX_LIST_LOGGING_PACKETS) {
             fprintf(stderr, "radio->m_lstLoggingPacketsCount reached %d\n",
@@ -385,8 +385,8 @@ CCRTPPacket *crazyradio_sendPacket(struct crazyradio *radio, CCRTPPacket *crtpSe
   return crtpPacket;
 }
 
-CCRTPPacket *crazyradio_readACK(struct crazyradio *radio) {
-  CCRTPPacket *crtpPacket = NULL;
+struct crtppacket *crazyradio_readACK(struct crazyradio *radio) {
+  struct crtppacket *crtpPacket = NULL;
 
   int nBufferSize = 64;
   char cBuffer[nBufferSize];
@@ -402,10 +402,10 @@ CCRTPPacket *crazyradio_readACK(struct crazyradio *radio) {
       // TODO(winkler): Do internal stuff with the data received here
       // (store current link quality, etc.). For now, ignore it.
 
-      crtpPacket = new CCRTPPacket(0);
+      crtpPacket = crtppacket_alloc(0);
 
       if(nBytesRead > 1) {
-        crtppacket_setData(&crtpPacket->packet, &cBuffer[1], nBytesRead);
+        crtppacket_setData(crtpPacket, &cBuffer[1], nBytesRead);
       }
     }
     else {
@@ -426,11 +426,11 @@ bool crazyradio_usbOK(struct crazyradio *radio) {
                                        &ddDescriptor) == 0);
 }
 
-CCRTPPacket *crazyradio_waitForPacket(struct crazyradio *radio) {
+struct crtppacket *crazyradio_waitForPacket(struct crazyradio *radio) {
   bool bGoon = true;
-  CCRTPPacket *crtpReceived = NULL;
-  CCRTPPacket *crtpDummy = new CCRTPPacket(0);
-  crtppacket_setIsPingPacket(&crtpDummy->packet, true);
+  struct crtppacket *crtpReceived = NULL;
+  struct crtppacket *crtpDummy = crtppacket_alloc(0);
+  crtppacket_setIsPingPacket(crtpDummy, true);
 
   while(bGoon) {
     crtpReceived = crazyradio_sendPacket(radio, crtpDummy);
@@ -441,23 +441,23 @@ CCRTPPacket *crazyradio_waitForPacket(struct crazyradio *radio) {
   return crtpReceived;
 }
 
-CCRTPPacket *crazyradio_sendAndReceive(struct crazyradio *radio,
-                                       CCRTPPacket *crtpSend,
+struct crtppacket *crazyradio_sendAndReceive(struct crazyradio *radio,
+                                       struct crtppacket *crtpSend,
                                        bool bDeleteAfterwards) {
   return crazyradio_sendAndReceive(radio, crtpSend,
-                                   crtppacket_port(&crtpSend->packet),
-                                   crtppacket_channel(&crtpSend->packet),
+                                   crtppacket_port(crtpSend),
+                                   crtppacket_channel(crtpSend),
                                    bDeleteAfterwards);
 }
 
-CCRTPPacket *
-crazyradio_sendAndReceive(struct crazyradio *radio, CCRTPPacket *crtpSend,
+struct crtppacket *
+crazyradio_sendAndReceive(struct crazyradio *radio, struct crtppacket *crtpSend,
                           int nPort, int nChannel, bool bDeleteAfterwards,
                           int nRetries, int nMicrosecondsWait) {
   bool bGoon = true;
   int nResendCounter = 0;
-  CCRTPPacket *crtpReturnvalue = NULL;
-  CCRTPPacket *crtpReceived = NULL;
+  struct crtppacket *crtpReturnvalue = NULL;
+  struct crtppacket *crtpReceived = NULL;
 
   while(bGoon) {
     if(nResendCounter == 0) {
@@ -468,8 +468,8 @@ crazyradio_sendAndReceive(struct crazyradio *radio, CCRTPPacket *crtpSend,
     }
 
     if(crtpReceived) {
-      if(crtppacket_port(&crtpReceived->packet) == nPort &&
-         crtppacket_channel(&crtpReceived->packet) == nChannel) {
+      if(crtppacket_port(crtpReceived) == nPort &&
+         crtppacket_channel(crtpReceived) == nChannel) {
         crtpReturnvalue = crtpReceived;
         bGoon = false;
       }
@@ -492,9 +492,9 @@ crazyradio_sendAndReceive(struct crazyradio *radio, CCRTPPacket *crtpSend,
   return crtpReturnvalue;
 }
 
-CCRTPPacket** crazyradio_popLoggingPackets(struct crazyradio *radio, int *count) {
-  CCRTPPacket** lstPackets =
-    (CCRTPPacket**)malloc(sizeof(*lstPackets) * radio->m_lstLoggingPacketsCount);
+struct crtppacket** crazyradio_popLoggingPackets(struct crazyradio *radio, int *count) {
+  struct crtppacket** lstPackets =
+    (struct crtppacket**)malloc(sizeof(*lstPackets) * radio->m_lstLoggingPacketsCount);
   if(lstPackets == NULL) {
     fprintf(stderr, "Malloc in crazyradio_popLoggingPackets failed\n");
     exit(EXIT_FAILURE);
@@ -508,9 +508,9 @@ CCRTPPacket** crazyradio_popLoggingPackets(struct crazyradio *radio, int *count)
 }
 
 bool crazyradio_sendDummyPacket(struct crazyradio *radio) {
-  CCRTPPacket *crtpReceived = NULL;
-  CCRTPPacket *crtpDummy = new CCRTPPacket(0);
-  crtppacket_setIsPingPacket(&crtpDummy->packet, true);
+  struct crtppacket *crtpReceived = NULL;
+  struct crtppacket *crtpDummy = crtppacket_alloc(0);
+  crtppacket_setIsPingPacket(crtpDummy, true);
 
   crtpReceived = crazyradio_sendPacket(radio, crtpDummy, true);
   if(crtpReceived) {

@@ -104,8 +104,8 @@ bool crazyflie_sendSetpoint(struct crazyflie *cf, float fRoll, float fPitch, flo
   memcpy(&cBuffer[2 * sizeof(float)], &fYaw, sizeof(float));
   memcpy(&cBuffer[3 * sizeof(float)], &sThrust, sizeof(short));
 
-  CCRTPPacket *crtpPacket = new CCRTPPacket(cBuffer, nSize, 3);
-  CCRTPPacket *crtpReceived = crazyradio_sendPacket(cf->m_crRadio, crtpPacket);
+  struct crtppacket *crtpPacket = crtppacket_alloc(cBuffer, nSize, 3);
+  struct crtppacket *crtpReceived = crazyradio_sendPacket(cf->m_crRadio, crtpPacket);
 
   delete crtpPacket;
   if(crtpReceived != NULL) {
@@ -158,7 +158,7 @@ bool crazyflie_cycle(struct crazyflie *cf) {
 
   case STATE_ZERO_MEASUREMENTS: {
     int count;
-    CCRTPPacket **packets = crazyradio_popLoggingPackets(cf->m_crRadio, &count);
+    struct crtppacket **packets = crazyradio_popLoggingPackets(cf->m_crRadio, &count);
     toc_processPackets(cf->m_tocLogs, packets, count);
 
     // NOTE(winkler): Here, we can do measurement zero'ing. This is
@@ -171,7 +171,7 @@ bool crazyflie_cycle(struct crazyflie *cf) {
   case STATE_NORMAL_OPERATION: {
     // Shove over the sensor readings from the radio to the Logs TOC.
     int count;
-    CCRTPPacket **packets = crazyradio_popLoggingPackets(cf->m_crRadio, &count);
+    struct crtppacket **packets = crazyradio_popLoggingPackets(cf->m_crRadio, &count);
     toc_processPackets(cf->m_tocLogs, packets, count);
 
     if(cf->m_bSendsSetpoints) {

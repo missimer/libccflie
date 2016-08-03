@@ -30,27 +30,65 @@
 #include <stdlib.h>
 
 
-CCRTPPacket::CCRTPPacket(int nPort) {
-  crtppacket_basicSetup(&this->packet);
-  crtppacket_setPort(&this->packet, nPort);
+void crtppacket_init(struct crtppacket *packet, int nPort) {
+  crtppacket_basicSetup(packet);
+  crtppacket_setPort(packet, nPort);
 }
 
-CCRTPPacket::CCRTPPacket(char *cData, int nDataLength, int nPort) {
-  crtppacket_basicSetup(&this->packet);
-  crtppacket_setPort(&this->packet, nPort);
+struct crtppacket *crtppacket_alloc(int nPort) {
+  struct crtppacket *packet = (struct crtppacket *)malloc(sizeof(struct crtppacket));
 
-  crtppacket_setData(&this->packet, cData, nDataLength);
+  if(packet != NULL) {
+    crtppacket_init(packet, nPort);
+  }
+
+  return packet;
 }
 
-CCRTPPacket::CCRTPPacket(char cData, int nPort) {
-  crtppacket_basicSetup(&this->packet);
-  crtppacket_setPort(&this->packet, nPort);
+void crtppacket_init(struct crtppacket *packet, char *cData, int nDataLength, int nPort) {
+  crtppacket_basicSetup(packet);
+  crtppacket_setPort(packet, nPort);
 
-  crtppacket_setData(&this->packet, &cData, 1);
+  crtppacket_setData(packet, cData, nDataLength);
 }
 
-CCRTPPacket::~CCRTPPacket() {
-  crtppacket_clearData(&this->packet);
+struct crtppacket *crtppacket_alloc(char *cData, int nDataLength, int nPort) {
+  struct crtppacket *packet = (struct crtppacket *)malloc(sizeof(struct crtppacket));
+
+  if(packet != NULL) {
+    crtppacket_init(packet, cData, nDataLength, nPort);
+  }
+
+  return packet;
+}
+
+void crtppacket_init(struct crtppacket *packet, char cData, int nPort) {
+  crtppacket_basicSetup(packet);
+  crtppacket_setPort(packet, nPort);
+
+  crtppacket_setData(packet, &cData, 1);
+}
+
+struct crtppacket *crtppacket_alloc(char cData, int nPort) {
+  struct crtppacket *packet = (struct crtppacket *)malloc(sizeof(struct crtppacket));
+
+  if(packet != NULL) {
+    crtppacket_init(packet, cData, nPort);
+  }
+
+  return packet;
+}
+
+
+void crtppacket_destroy(struct crtppacket *packet) {
+  crtppacket_clearData(packet);
+}
+
+void crtppacket_free(struct crtppacket *packet) {
+  if(packet != NULL) {
+    crtppacket_destroy(packet);
+    free(packet);
+  }
 }
 
 void crtppacket_basicSetup(struct crtppacket *packet) {

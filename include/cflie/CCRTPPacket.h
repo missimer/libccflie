@@ -129,44 +129,15 @@ void crtppacket_setIsPingPacket(struct crtppacket *packet, bool bIsPingPacket);
 bool crtppacket_isPingPacket(struct crtppacket *packet);
 
 
+void crtppacket_init(struct crtppacket *packet, int nChannel);
+struct crtppacket *crtppacket_alloc(int nChannel);
+void crtppacket_init(struct crtppacket *packet, char *cData, int nDataLength, int nChannel);
+struct crtppacket *crtppacket_alloc(char *cData, int nDataLength, int nChannel);
+void crtppacket_init(struct crtppacket *packet, char cData, int nPort);
+struct crtppacket *crtppacket_alloc(char cData, int nPort);
 
-/*! \brief Class to hold and process communication-related data for
-  the CRTProtocol */
-class CCRTPPacket {
- public:
-
-  struct crtppacket packet;
-
-
- public:
-  /*! \brief Constructor for the CCRTPPacket communication packet
-    class
-
-    Initializes the communication packet and sets the given
-    channel. The packet starts out without payload data.
-
-    \param nChannel The channel the payload in this packet is
-    designated for. */
-  CCRTPPacket(int nChannel);
-  /*! \brief Convenience constructor for the CCRTPPacket communication
-    packet class
-
-    Initializes the communication packet and sets the given
-    channel. The given data is set as the internal payload data.
-
-    \param cData The data pointer to read the new payload data from
-    \param nDataLength The length (in bytes) of data to read from
-    cData
-    \param nChannel The channel the payload in this packet is
-    designated for. */
-  CCRTPPacket(char *cData, int nDataLength, int nChannel);
-  CCRTPPacket(char cData, int nPort);
-  /*! \brief Destructor for the packet class
-
-    De-initializes the packet and deletes all available payload data
-    stored. */
-  ~CCRTPPacket();
-};
+void crtppacket_destroy(struct crtppacket *packet);
+void crtppacket_free(struct crtppacket *packet);
 
 
 #endif /* __C_CRTP_PACKET_H__ */

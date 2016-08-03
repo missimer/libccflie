@@ -80,7 +80,7 @@ struct crazyradio {
   float m_fDeviceVersion;
   bool m_bAckReceived;
   int m_lstLoggingPacketsCount;
-  CCRTPPacket* m_lstLoggingPackets[MAX_LIST_LOGGING_PACKETS];
+  struct crtppacket* m_lstLoggingPackets[MAX_LIST_LOGGING_PACKETS];
 
 };
 
@@ -95,9 +95,9 @@ bool crazyradio_openUSBDongle(struct crazyradio *radio);
 bool crazyradio_claimInterface(struct crazyradio *radio, int nInterface);
 void crazyradio_closeDevice(struct crazyradio *radio);
 
-CCRTPPacket * crazyradio_readACK(struct crazyradio *radio);
+struct crtppacket * crazyradio_readACK(struct crazyradio *radio);
 
-CCRTPPacket * crazyradio_writeData(struct crazyradio *radio, void *vdData, int nLength);
+struct crtppacket * crazyradio_writeData(struct crazyradio *radio, void *vdData, int nLength);
 bool crazyradio_writeControl(struct crazyradio *radio, void *vdData, int nLength, uint8_t u8Request, uint16_t u16Value, uint16_t u16Index);
 bool crazyradio_readData(struct crazyradio *radio, void *vdData, int *nMaxLength);
 
@@ -137,7 +137,7 @@ void crazyradio_setPower(struct crazyradio *radio, enum Power enumPower);
 
   \param crtpSend The packet which supplied header and payload
   information to send to the copter */
-CCRTPPacket * crazyradio_sendPacket(struct crazyradio *radio, CCRTPPacket *crtpSend, bool bDeleteAfterwards = false);
+struct crtppacket * crazyradio_sendPacket(struct crazyradio *radio, struct crtppacket *crtpSend, bool bDeleteAfterwards = false);
 
 /*! \brief Sends the given packet and waits for a reply.
 
@@ -151,11 +151,11 @@ CCRTPPacket * crazyradio_sendPacket(struct crazyradio *radio, CCRTPPacket *crtpS
 
   \return Packet containing the reply or NULL if no reply was
   received (after retrying). */
-CCRTPPacket * crazyradio_sendAndReceive(struct crazyradio *radio, CCRTPPacket *crtpSend, bool bDeleteAfterwards = false);
+struct crtppacket * crazyradio_sendAndReceive(struct crazyradio *radio, struct crtppacket *crtpSend, bool bDeleteAfterwards = false);
 
 /*! \brief Sends the given packet and waits for a reply.
 
-  Sends out the CCRTPPacket instance denoted by crtpSend on the
+  Sends out the struct crtppacket instance denoted by crtpSend on the
   given port and channel. Retries a number of times and waits
   between each retry whether or not an answer was received (in this
   case, dummy packets are sent in order to receive replies).
@@ -174,7 +174,7 @@ CCRTPPacket * crazyradio_sendAndReceive(struct crazyradio *radio, CCRTPPacket *c
 
   \return Packet containing the reply or NULL if no reply was
   received (after retrying). */
-CCRTPPacket * crazyradio_sendAndReceive(struct crazyradio *radio, CCRTPPacket *crtpSend, int nPort, int nChannel, bool bDeleteAfterwards = true, int nRetries = 10, int nMicrosecondsWait = 100);
+struct crtppacket * crazyradio_sendAndReceive(struct crazyradio *radio, struct crtppacket *crtpSend, int nPort, int nChannel, bool bDeleteAfterwards = true, int nRetries = 10, int nMicrosecondsWait = 100);
 
 /*! \brief Sends out an empty dummy packet
 
@@ -191,7 +191,7 @@ bool crazyradio_sendDummyPacket(struct crazyradio *radio);
   returns this reply.
 
   \return Packet contaning a non-empty reply. */
-CCRTPPacket *crazyradio_waitForPacket(struct crazyradio *radio);
+struct crtppacket *crazyradio_waitForPacket(struct crazyradio *radio);
 
 /*! \brief Whether or not the copter is answering sent packets.
 
@@ -215,8 +215,8 @@ bool crazyradio_usbOK(struct crazyradio *radio);
   from port 5) packets. This is called by the CCrazyflie class
   automatically when performing cycle().
 
-  \return List of CCRTPPacket instances collected from port 5
+  \return List of struct crtppacket instances collected from port 5
   (logging). */
-CCRTPPacket** crazyradio_popLoggingPackets(struct crazyradio *radio, int *count);
+struct crtppacket** crazyradio_popLoggingPackets(struct crazyradio *radio, int *count);
 
 #endif /* __C_CRAZY_RADIO_H__ */
