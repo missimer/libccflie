@@ -36,7 +36,7 @@
 #include <GL/glfw.h>
 
 // libcflie
-#include <cflie/CCrazyflie.h>
+#include <cflie/crazyflie.h>
 
 
 bool g_bGoon;

@@ -26,7 +26,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 
-#include <cflie/CCrazyRadio.h>
+#include <cflie/crazyradio.h>
 #include <stdlib.h>
 #include <stdio.h>
 

@@ -34,7 +34,7 @@
 #include <csignal>
 
 // libcflie
-#include <cflie/CCrazyflie.h>
+#include <cflie/crazyflie.h>
 
 
 bool g_bGoon;

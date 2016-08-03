@@ -26,7 +26,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 
-#include <cflie/CCrazyflie.h>
+#include <cflie/crazyflie.h>
 
 #include <stdlib.h>
 

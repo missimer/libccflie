@@ -26,7 +26,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 
-#include <cflie/CTOC.h>
+#include <cflie/toc.h>
 
 #include <stdio.h>
 #include <stdlib.h>

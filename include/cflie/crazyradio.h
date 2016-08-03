@@ -39,7 +39,7 @@
 #include <unistd.h>
 
 // Private
-#include "CCRTPPacket.h"
+#include "crtppacket.h"
 
 #define MAX_LIST_LOGGING_PACKETS 256
 

@@ -37,8 +37,8 @@
 #include <string.h>
 
 // Private
-#include "CCrazyRadio.h"
-#include "CCRTPPacket.h"
+#include "crazyradio.h"
+#include "crtppacket.h"
 
 
 /*! \brief Storage element for logged variable identities */

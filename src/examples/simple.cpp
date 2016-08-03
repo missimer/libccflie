@@ -33,7 +33,7 @@
 #include <iostream>
 
 // libcflie
-#include <cflie/CCrazyflie.h>
+#include <cflie/crazyflie.h>
 
 
 int main(int argc, char **argv) {

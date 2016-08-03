@@ -40,8 +40,8 @@
 #include <math.h>
 
 // Private
-#include "CCrazyRadio.h"
-#include "CTOC.h"
+#include "crazyradio.h"
+#include "toc.h"
 
 
 enum State {

@@ -26,7 +26,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 
-#include <cflie/CCRTPPacket.h>
+#include <cflie/crtppacket.h>
 #include <stdlib.h>
 
 
