@@ -107,9 +107,9 @@ bool crazyflie_sendSetpoint(struct crazyflie *cf, float fRoll, float fPitch, flo
   struct crtppacket *crtpPacket = crtppacket_alloc(cBuffer, nSize, 3);
   struct crtppacket *crtpReceived = crazyradio_sendPacket(cf->m_crRadio, crtpPacket);
 
-  delete crtpPacket;
+  crtppacket_free(crtpPacket);
   if(crtpReceived != NULL) {
-    delete crtpReceived;
+    crtppacket_free(crtpReceived);
     return true;
   } else {
     return false;

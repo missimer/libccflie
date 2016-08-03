@@ -147,7 +147,7 @@ struct crtppacket * crazyradio_sendPacket(struct crazyradio *radio, struct crtpp
 
   \param crtpSend Packet to send
   \param bDeleteAfterwards Whether or not the packet to send is
-  deleted internally after sending it
+  freed internally after sending it
 
   \return Packet containing the reply or NULL if no reply was
   received (after retrying). */
@@ -167,7 +167,7 @@ struct crtppacket * crazyradio_sendAndReceive(struct crazyradio *radio, struct c
   \param nChannel Channel number on which to send this packet (and
   where to wait for the reply)
   \param bDeletAfterwards Whether or not the packet to send is
-  deleted internally after sending it
+  freed internally after sending it
   \param nRetries Number of retries (re-sending) before giving up on
   an answer
   \param nMicrosecondsWait Microseconds to wait between two re-sends

@@ -339,7 +339,7 @@ struct crtppacket *crazyradio_sendPacket(struct crazyradio *radio, struct crtppa
   char *cSendable = crtppacket_sendableData(crtpSend);
   crtpPacket = crazyradio_writeData(radio, cSendable, crtppacket_sendableDataLength(crtpSend));
 
-  delete[] cSendable;
+  free(cSendable);
 
   if(crtpPacket) {
     char *cData = crtppacket_data(crtpPacket);
@@ -379,7 +379,7 @@ struct crtppacket *crazyradio_sendPacket(struct crazyradio *radio, struct crtppa
   }
 
   if(bDeleteAfterwards) {
-    delete crtpSend;
+    crtppacket_free(crtpSend);
   }
 
   return crtpPacket;
@@ -437,7 +437,7 @@ struct crtppacket *crazyradio_waitForPacket(struct crazyradio *radio) {
     bGoon = (crtpReceived == NULL);
   }
 
-  delete crtpDummy;
+  crtppacket_free(crtpDummy);
   return crtpReceived;
 }
 
@@ -477,7 +477,7 @@ crazyradio_sendAndReceive(struct crazyradio *radio, struct crtppacket *crtpSend,
 
     if(bGoon) {
       if(crtpReceived) {
-        delete crtpReceived;
+        crtppacket_free(crtpReceived);
       }
 
       usleep(nMicrosecondsWait);
@@ -486,7 +486,7 @@ crazyradio_sendAndReceive(struct crazyradio *radio, struct crtppacket *crtpSend,
   }
 
   if(bDeleteAfterwards) {
-    delete crtpSend;
+    crtppacket_free(crtpSend);
   }
 
   return crtpReturnvalue;
@@ -514,7 +514,7 @@ bool crazyradio_sendDummyPacket(struct crazyradio *radio) {
 
   crtpReceived = crazyradio_sendPacket(radio, crtpDummy, true);
   if(crtpReceived) {
-    delete crtpReceived;
+    crtppacket_free(crtpReceived);
     return true;
   }
 

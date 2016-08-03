@@ -92,7 +92,7 @@ int crtppacket_dataLength(struct crtppacket *packet);
 
   A block of data is prepared that contains the packet header
   (channel, port), the payload data and a finishing byte
-  (0x27). This block is newly allocated and must be delete[]'d after
+  (0x27). This block is newly allocated and must be freed after
   usage.
 
   \return Pointer to a new char[] containing a sendable block of

@@ -65,7 +65,7 @@ bool toc_sendTOCPointerReset(struct toc *toc) {
   struct crtppacket* crtpReceived = crazyradio_sendPacket(toc->m_crRadio, crtpPacket, true);
 
   if(crtpReceived) {
-    delete crtpReceived;
+    crtppacket_free(crtpReceived);
     return true;
   }
 
@@ -84,7 +84,7 @@ bool toc_requestMetaData(struct toc *toc) {
     bReturnvalue = true;
   }
 
-  delete crtpReceived;
+  crtppacket_free(crtpReceived);
   return bReturnvalue;
 }
 
@@ -111,7 +111,7 @@ bool toc_requestItem(struct toc *toc, int nID, bool bInitial) {
 
   bReturnvalue = toc_processItem(toc, crtpReceived);
 
-  delete crtpReceived;
+  crtppacket_free(crtpReceived);
   return bReturnvalue;
 }
 
@@ -274,7 +274,7 @@ bool toc_startLogging(struct toc *toc, const char *strName, const char *strBlock
       }
 
       if(crtpReceived) {
-        delete crtpReceived;
+        crtppacket_free(crtpReceived);
       }
 
       if(bCreateOK) {
@@ -399,7 +399,7 @@ bool toc_registerLoggingBlock(struct toc *toc, const char *strName, double dFreq
     }
 
     if(crtpReceived) {
-      delete crtpReceived;
+      crtppacket_free(crtpReceived);
     }
 
     if(bCreateOK) {
@@ -435,7 +435,7 @@ bool toc_enableLogging(struct toc *toc, const char *strBlockName) {
     crtppacket_setChannel(crtpEnable, 1);
 
     struct crtppacket* crtpReceived = crazyradio_sendAndReceive(toc->m_crRadio, crtpEnable);
-    delete crtpReceived;
+    crtppacket_free(crtpReceived);
 
     return true;
   }
@@ -464,7 +464,7 @@ bool toc_unregisterLoggingBlockID(struct toc *toc, int nID) {
   struct crtppacket* crtpReceived = crazyradio_sendAndReceive(toc->m_crRadio, crtpUnregisterBlock, true);
 
   if(crtpReceived) {
-    delete crtpReceived;
+    crtppacket_free(crtpReceived);
     return true;
   }
 
@@ -586,7 +586,7 @@ void toc_processPackets(struct toc *toc, struct crtppacket** lstPackets, int cou
         }
       }
 
-      delete crtpPacket;
+      crtppacket_free(crtpPacket);
     }
   }
 }

@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
 
       // Important note: When quitting the program, please don't just
       // SIGINT (i.e. CTRL-C) it. The CCrazyflie class instance
-      // cflieCopter must be deleted in order to call the destructor
+      // cflieCopter must be freed in order to call the destructor
       // which stops logging on the device. If you fail to do this
       // when quitting your program, your copter will experience some
       // kind of buffer overflow (because of a lot of logging messages
