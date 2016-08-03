@@ -30,8 +30,8 @@
 
 
 // System
-#include <iostream>
-#include <csignal>
+#include <stdio.h>
+#include <signal.h>
 
 // libcflie
 #include <cflie/crazyflie.h>
@@ -40,20 +40,20 @@
 bool g_bGoon;
 
 
-void interruptionHandler(int dummy = 0) {
+void interruptionHandler(int dummy) {
   g_bGoon = false;
 }
 
 int main(int argc, char **argv) {
-  std::signal(SIGINT, interruptionHandler);
+  signal(SIGINT, interruptionHandler);
 
   int nReturnvalue = 0;
   int nThrust = 10001;
 
-  std::string strRadioURI = "radio://0/80/250K";
+  char strRadioURI[] = "radio://0/80/250K";
 
-  std::cout << "Opening radio URI '" << strRadioURI << "'" << std::endl;
-  struct crazyradio *crRadio = crazyradio_alloc(strRadioURI.c_str());
+  printf("Opening radio URI '%s'\n", strRadioURI);
+  struct crazyradio *crRadio = crazyradio_alloc(strRadioURI);
 
   g_bGoon = true;
   bool bDongleConnected = false;
@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
     if(!bDongleConnected) {
       while(!crazyradio_startRadio(crRadio) && g_bGoon) {
         if(!bDongleNotConnectedNotified) {
-          std::cout << "Waiting for dongle." << std::endl;
+          printf("Waiting for dongle.\n");
           bDongleNotConnectedNotified = true;
         }
 
@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
       }
 
       if(g_bGoon) {
-        std::cout << "Dongle connected, radio started." << std::endl;
+        printf("Dongle connected, radio started.\n");
       }
     }
 
@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
           if(crazyflie_copterInRange(cflieCopter)) {
             if(!bCopterWasInRange || !bRangeStateChangedNotified) {
               // Event triggered when the copter first comes in range.
-              std::cout << "In range" << std::endl;
+              printf("In range\n");
 
               bCopterWasInRange = true;
               bRangeStateChangedNotified = true;
@@ -106,7 +106,7 @@ int main(int argc, char **argv) {
           } else {
             if(bCopterWasInRange || !bRangeStateChangedNotified) {
               // Event triggered when the copter leaves the range.
-              std::cout << "Not in range" << std::endl;
+              printf("Not in range\n");
 
               bCopterWasInRange = false;
               bRangeStateChangedNotified = true;
@@ -115,7 +115,7 @@ int main(int argc, char **argv) {
             // Loop body for when the copter is not in range
           }
         } else {
-          std::cerr << "Connection to radio dongle lost." << std::endl;
+          fprintf(stderr, "Connection to radio dongle lost.\n");
 
           bDongleConnected = false;
         }
@@ -131,7 +131,7 @@ int main(int argc, char **argv) {
     }
   }
 
-  std::cout << "Cleaning up" << std::endl;
+  printf("Cleaning up\n");
   crazyradio_free(crRadio);
 
   return nReturnvalue;

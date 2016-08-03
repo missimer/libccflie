@@ -30,7 +30,7 @@
 
 
 // System
-#include <iostream>
+#include <stdio.h>
 
 // libcflie
 #include <cflie/crazyflie.h>
@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
 
     crazyflie_free(cflieCopter);
   } else {
-    std::cerr << "Could not connect to dongle. Did you plug it in?" << std::endl;
+    fprintf(stderr, "Could not connect to dongle. Did you plug it in?");
   }
 
   crazyradio_free(crRadio);

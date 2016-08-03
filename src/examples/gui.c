@@ -30,10 +30,10 @@
 
 
 // System
-#include <iostream>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glfw.h>
+#include <stdio.h>
 
 // libcflie
 #include <cflie/crazyflie.h>
@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
         glFrustum(.5, -.5, -.5 * fAspectRatio, .5 * fAspectRatio, 1, 50);
         glMatrixMode(GL_MODELVIEW);
 
-        std::cout << "Running, exit with 'ESC'." << std::endl;
+        printf("Running, exit with 'ESC'.\n");
         while(g_bGoon) {
           if(crazyflie_cycle(cflieCopter)) {
             drawGL(crazyflie_roll(cflieCopter),
@@ -145,7 +145,7 @@ int main(int argc, char **argv) {
 
     crazyflie_free(cflieCopter);
   } else {
-    std::cerr << "Radio could not be started." << std::endl;
+    fprintf(stderr, "Radio could not be started.\n");
   }
 
   crazyradio_free(crRadio);
