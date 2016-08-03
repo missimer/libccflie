@@ -5,3 +5,5 @@ build
 Doxyfile
 TAGS
 tags
+*.o
+*.d
