@@ -34,14 +34,9 @@
 
 
 // System
-#include <list>
-#include <string>
-#include <cstdio>
-#include <cstring>
+#include <string.h>
 #include <libusb-1.0/libusb.h>
 #include <unistd.h>
-#include <iostream>
-#include <sstream>
 
 // Private
 #include "CCRTPPacket.h"
@@ -137,7 +132,10 @@ void crazyradio_setPower(struct crazyradio *radio, enum Power enumPower);
 
   \param crtpSend The packet which supplied header and payload
   information to send to the copter */
-struct crtppacket * crazyradio_sendPacket(struct crazyradio *radio, struct crtppacket *crtpSend, bool bDeleteAfterwards = false);
+struct crtppacket * crazyradio_sendPacket(struct crazyradio *radio,
+                                          struct crtppacket *crtpSend,
+                                          bool bDeleteAfterwards);
+// defaults: bDeleteAfterwards = false
 
 /*! \brief Sends the given packet and waits for a reply.
 
@@ -151,7 +149,11 @@ struct crtppacket * crazyradio_sendPacket(struct crazyradio *radio, struct crtpp
 
   \return Packet containing the reply or NULL if no reply was
   received (after retrying). */
-struct crtppacket * crazyradio_sendAndReceive(struct crazyradio *radio, struct crtppacket *crtpSend, bool bDeleteAfterwards = false);
+struct crtppacket * crazyradio_sendAndReceive(struct crazyradio *radio,
+                                              struct crtppacket *crtpSend,
+                                              bool bDeleteAfterwards);
+
+// defaults: bool bDeleteAfterwards = false
 
 /*! \brief Sends the given packet and waits for a reply.
 
@@ -174,9 +176,17 @@ struct crtppacket * crazyradio_sendAndReceive(struct crazyradio *radio, struct c
 
   \return Packet containing the reply or NULL if no reply was
   received (after retrying). */
-struct crtppacket * crazyradio_sendAndReceive(struct crazyradio *radio, struct crtppacket *crtpSend, int nPort, int nChannel, bool bDeleteAfterwards = true, int nRetries = 10, int nMicrosecondsWait = 100);
+struct crtppacket * crazyradio_sendAndReceive2(struct crazyradio *radio,
+                                              struct crtppacket *crtpSend,
+                                              int nPort,
+                                              int nChannel,
+                                              bool bDeleteAfterwards,
+                                              int nRetries,
+                                              int nMicrosecondsWait);
 
-/*! \brief Sends out an empty dummy packet
+// defaults: bDeleteAfterwards = true, nRetries = 10, nMicrosecondsWait = 100
+
+/*! \brief s out an empty dummy packet
 
   Only contains the payload `0xff`, as used for empty packet
   requests. Mostly used for waiting or keepalive.

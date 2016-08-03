@@ -45,35 +45,35 @@ struct crtppacket *crtppacket_alloc(int nPort) {
   return packet;
 }
 
-void crtppacket_init(struct crtppacket *packet, char *cData, int nDataLength, int nPort) {
+void crtppacket_init_with_data(struct crtppacket *packet, char *cData, int nDataLength, int nPort) {
   crtppacket_basicSetup(packet);
   crtppacket_setPort(packet, nPort);
 
   crtppacket_setData(packet, cData, nDataLength);
 }
 
-struct crtppacket *crtppacket_alloc(char *cData, int nDataLength, int nPort) {
+struct crtppacket *crtppacket_alloc_with_data(char *cData, int nDataLength, int nPort) {
   struct crtppacket *packet = (struct crtppacket *)malloc(sizeof(struct crtppacket));
 
   if(packet != NULL) {
-    crtppacket_init(packet, cData, nDataLength, nPort);
+    crtppacket_init_with_data(packet, cData, nDataLength, nPort);
   }
 
   return packet;
 }
 
-void crtppacket_init(struct crtppacket *packet, char cData, int nPort) {
+void crtppacket_init_with_single_data(struct crtppacket *packet, char cData, int nPort) {
   crtppacket_basicSetup(packet);
   crtppacket_setPort(packet, nPort);
 
   crtppacket_setData(packet, &cData, 1);
 }
 
-struct crtppacket *crtppacket_alloc(char cData, int nPort) {
+struct crtppacket *crtppacket_alloc_with_single_data(char cData, int nPort) {
   struct crtppacket *packet = (struct crtppacket *)malloc(sizeof(struct crtppacket));
 
   if(packet != NULL) {
-    crtppacket_init(packet, cData, nPort);
+    crtppacket_init_with_single_data(packet, cData, nPort);
   }
 
   return packet;

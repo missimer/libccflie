@@ -37,7 +37,7 @@
 
 
 // System
-#include <cmath>
+#include <math.h>
 
 // Private
 #include "CCrazyRadio.h"

@@ -92,7 +92,7 @@ libusb_device ** crazyradio_listDevices(struct crazyradio *radio, int nVendorID,
   szCount = libusb_get_device_list(radio->m_ctxContext, &ptDevices);
   for(unsigned int unI = 0; unI < szCount; unI++) {
     libusb_device *devCurrent = ptDevices[unI];
-    libusb_device_descriptor ddDescriptor;
+    struct libusb_device_descriptor ddDescriptor;
 
     libusb_get_device_descriptor(devCurrent, &ddDescriptor);
 
@@ -156,14 +156,11 @@ bool crazyradio_startRadio(struct crazyradio *radio) {
       printf("Opening radio %d/%d/%d%c\n", nDongleNBR, nRadioChannel, nDataRate,
              cDataRateType);
 
-      std::stringstream sts;
-      sts << nDataRate;
-      sts << cDataRateType;
       char strDataRate[256];
       sprintf(strDataRate, "%d%c", nDataRate, cDataRateType);
 
       // Read device version
-      libusb_device_descriptor ddDescriptor;
+      struct libusb_device_descriptor ddDescriptor;
       libusb_get_device_descriptor(radio->m_devDevice, &ddDescriptor);
       char tmpStr[256];
       sprintf(tmpStr, "%d.%d", ddDescriptor.bcdDevice >> 8, ddDescriptor.bcdDevice & 0x0ff);
@@ -291,7 +288,7 @@ void crazyradio_setDataRate(struct crazyradio *radio, const char *strDataRate) {
 void crazyradio_setARDTime(struct crazyradio *radio, int nARDTime) { // in uSec
   radio->m_nARDTime = nARDTime;
 
-  int nT = int((nARDTime / 250) - 1);
+  int nT = (int)((nARDTime / 250) - 1);
   if(nT < 0) {
     nT = 0;
   } else if(nT > 0xf) {
@@ -362,7 +359,7 @@ struct crtppacket *crazyradio_sendPacket(struct crazyradio *radio, struct crtppa
 
       case 5: { // Logging
         if(crtppacket_channel(crtpPacket) == 2) {
-          struct crtppacket *crtpLog = crtppacket_alloc(cData, nLength, crtppacket_channel(crtpPacket));
+          struct crtppacket *crtpLog = crtppacket_alloc_with_data(cData, nLength, crtppacket_channel(crtpPacket));
           crtppacket_setChannel(crtpLog, crtppacket_channel(crtpPacket));
           crtppacket_setPort(crtpLog, crtppacket_port(crtpPacket));
 
@@ -421,7 +418,7 @@ bool crazyradio_ackReceived(struct crazyradio *radio) {
 }
 
 bool crazyradio_usbOK(struct crazyradio *radio) {
-  libusb_device_descriptor ddDescriptor;
+  struct libusb_device_descriptor ddDescriptor;
   return (libusb_get_device_descriptor(radio->m_devDevice,
                                        &ddDescriptor) == 0);
 }
@@ -433,7 +430,7 @@ struct crtppacket *crazyradio_waitForPacket(struct crazyradio *radio) {
   crtppacket_setIsPingPacket(crtpDummy, true);
 
   while(bGoon) {
-    crtpReceived = crazyradio_sendPacket(radio, crtpDummy);
+    crtpReceived = crazyradio_sendPacket(radio, crtpDummy, false);
     bGoon = (crtpReceived == NULL);
   }
 
@@ -444,16 +441,17 @@ struct crtppacket *crazyradio_waitForPacket(struct crazyradio *radio) {
 struct crtppacket *crazyradio_sendAndReceive(struct crazyradio *radio,
                                        struct crtppacket *crtpSend,
                                        bool bDeleteAfterwards) {
-  return crazyradio_sendAndReceive(radio, crtpSend,
-                                   crtppacket_port(crtpSend),
-                                   crtppacket_channel(crtpSend),
-                                   bDeleteAfterwards);
+  return crazyradio_sendAndReceive2(radio, crtpSend,
+                                    crtppacket_port(crtpSend),
+                                    crtppacket_channel(crtpSend),
+                                    bDeleteAfterwards,
+                                    10, 100);
 }
 
 struct crtppacket *
-crazyradio_sendAndReceive(struct crazyradio *radio, struct crtppacket *crtpSend,
-                          int nPort, int nChannel, bool bDeleteAfterwards,
-                          int nRetries, int nMicrosecondsWait) {
+crazyradio_sendAndReceive2(struct crazyradio *radio, struct crtppacket *crtpSend,
+                           int nPort, int nChannel, bool bDeleteAfterwards,
+                           int nRetries, int nMicrosecondsWait) {
   bool bGoon = true;
   int nResendCounter = 0;
   struct crtppacket *crtpReturnvalue = NULL;
@@ -461,7 +459,7 @@ crazyradio_sendAndReceive(struct crazyradio *radio, struct crtppacket *crtpSend,
 
   while(bGoon) {
     if(nResendCounter == 0) {
-      crtpReceived = crazyradio_sendPacket(radio, crtpSend);
+      crtpReceived = crazyradio_sendPacket(radio, crtpSend, false);
       nResendCounter = nRetries;
     } else {
       nResendCounter--;

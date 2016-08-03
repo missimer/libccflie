@@ -34,7 +34,8 @@
 
 
 // System
-#include <cstring>
+#include <stdbool.h>
+#include <string.h>
 
 struct crtppacket {
     // Variables
@@ -131,10 +132,10 @@ bool crtppacket_isPingPacket(struct crtppacket *packet);
 
 void crtppacket_init(struct crtppacket *packet, int nChannel);
 struct crtppacket *crtppacket_alloc(int nChannel);
-void crtppacket_init(struct crtppacket *packet, char *cData, int nDataLength, int nChannel);
-struct crtppacket *crtppacket_alloc(char *cData, int nDataLength, int nChannel);
-void crtppacket_init(struct crtppacket *packet, char cData, int nPort);
-struct crtppacket *crtppacket_alloc(char cData, int nPort);
+void crtppacket_init_with_data(struct crtppacket *packet, char *cData, int nDataLength, int nChannel);
+struct crtppacket *crtppacket_alloc_with_data(char *cData, int nDataLength, int nChannel);
+void crtppacket_init_with_single_data(struct crtppacket *packet, char cData, int nPort);
+struct crtppacket *crtppacket_alloc_with_single_data(char cData, int nPort);
 
 void crtppacket_destroy(struct crtppacket *packet);
 void crtppacket_free(struct crtppacket *packet);

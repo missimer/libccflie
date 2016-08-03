@@ -28,6 +28,8 @@
 
 #include <cflie/CCrazyflie.h>
 
+#include <stdlib.h>
+
 struct crazyflie * crazyflie_alloc(struct crazyradio *crRadio) {
 
   struct crazyflie *cf = (struct crazyflie *)malloc(sizeof(struct crazyflie));
@@ -104,8 +106,8 @@ bool crazyflie_sendSetpoint(struct crazyflie *cf, float fRoll, float fPitch, flo
   memcpy(&cBuffer[2 * sizeof(float)], &fYaw, sizeof(float));
   memcpy(&cBuffer[3 * sizeof(float)], &sThrust, sizeof(short));
 
-  struct crtppacket *crtpPacket = crtppacket_alloc(cBuffer, nSize, 3);
-  struct crtppacket *crtpReceived = crazyradio_sendPacket(cf->m_crRadio, crtpPacket);
+  struct crtppacket *crtpPacket = crtppacket_alloc_with_data(cBuffer, nSize, 3);
+  struct crtppacket *crtpReceived = crazyradio_sendPacket(cf->m_crRadio, crtpPacket, false);
 
   crtppacket_free(crtpPacket);
   if(crtpReceived != NULL) {
@@ -244,7 +246,7 @@ double crazyflie_currentTime(struct crazyflie *cf) {
   struct timespec tsTime;
   clock_gettime(CLOCK_MONOTONIC, &tsTime);
 
-  return tsTime.tv_sec + double(tsTime.tv_nsec) / NSEC_PER_SEC;
+  return tsTime.tv_sec + (double)(tsTime.tv_nsec) / NSEC_PER_SEC;
 }
 
 bool crazyflie_isInitialized(struct crazyflie *cf) {
