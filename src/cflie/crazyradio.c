@@ -153,8 +153,6 @@ bool crazyradio_startRadio(struct crazyradio *radio) {
     if(sscanf(radio->m_strRadioIdentifier, "radio://%d/%d/%d%c",
               &nDongleNBR, &nRadioChannel, &nDataRate,
               &cDataRateType) != EOF) {
-      printf("Opening radio %d/%d/%d%c\n", nDongleNBR, nRadioChannel, nDataRate,
-             cDataRateType);
 
       char strDataRate[256];
       sprintf(strDataRate, "%d%c", nDataRate, cDataRateType);
@@ -166,7 +164,6 @@ bool crazyradio_startRadio(struct crazyradio *radio) {
       sprintf(tmpStr, "%d.%d", ddDescriptor.bcdDevice >> 8, ddDescriptor.bcdDevice & 0x0ff);
       sscanf(tmpStr, "%f", &radio->m_fDeviceVersion);
 
-      printf("Get device version %f\n", radio->m_fDeviceVersion);
       if(radio->m_fDeviceVersion < 0.3) {
         return false;
       }
@@ -330,7 +327,9 @@ bool crazyradio_claimInterface(struct crazyradio *radio, int nInterface) {
   return libusb_claim_interface(radio->m_hndlDevice, nInterface) == 0;
 }
 
-struct crtppacket *crazyradio_sendPacket(struct crazyradio *radio, struct crtppacket *crtpSend, bool bDeleteAfterwards) {
+struct crtppacket *crazyradio_sendPacket(struct crazyradio *radio,
+                                         struct crtppacket *crtpSend,
+                                         bool bDeleteAfterwards) {
   struct crtppacket *crtpPacket = NULL;
 
   char *cSendable = crtppacket_sendableData(crtpSend);
@@ -354,7 +353,6 @@ struct crtppacket *crazyradio_sendPacket(struct crazyradio *radio, struct crtppa
         memcpy(cText, &cData[1], nLength - 1);
         cText[nLength - 1] = '\0';
 
-        printf("Console text %s\n", cText);
       } break;
 
       case 5: { // Logging

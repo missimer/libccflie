@@ -387,7 +387,8 @@ bool toc_registerLoggingBlock(struct toc *toc, const char *strName, double dFreq
     crtppacket_setPort(crtpRegisterBlock, toc->m_nPort);
     crtppacket_setChannel(crtpRegisterBlock, 1);
 
-    struct crtppacket* crtpReceived = crazyradio_sendAndReceive(toc->m_crRadio, crtpRegisterBlock, true);
+    struct crtppacket* crtpReceived =
+      crazyradio_sendAndReceive(toc->m_crRadio, crtpRegisterBlock, true);
 
     char* cData = crtppacket_data(crtpReceived);
     bool bCreateOK = false;
@@ -395,7 +396,6 @@ bool toc_registerLoggingBlock(struct toc *toc, const char *strName, double dFreq
        cData[2] == nID &&
        cData[3] == 0x00) {
       bCreateOK = true;
-      printf("Registered logging block `%s'\n", strName);
     }
 
     if(crtpReceived) {

@@ -13,13 +13,13 @@ LIB_CFILES := $(patsubst %,$(LIB_SRC_DIR)/%,$(_LIB_CFILES))
 LIB_OBJS := $(patsubst %.c,%.o,$(LIB_CFILES))
 
 # Example related variables
-_EXAMPLES := gui replugging simple
+_EXAMPLES := gui replugging simple hover
 EX_SRC_DIR := src/examples
 EX_CFILES := $(patsubst %,$(EX_SRC_DIR)/%.c,$(_EXAMPLES))
 EX_OBJS := $(patsubst %.c,%.o,$(EX_CFILES))
 BIN_FOLDER := bin
 EXAMPLES := $(patsubst %,$(BIN_FOLDER)/%,$(_EXAMPLES))
-LIBS := -lglfw -lGL -lusb-1.0
+LIBS := -lglfw -lGL -lusb-1.0 -lncurses
 
 OBJS := $(LIB_OBJS) $(EX_OBJS)
 DFILES := $(patsubst %.o,%.d,$(OBJS))
